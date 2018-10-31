@@ -22,7 +22,8 @@ Lidarr should pick up the files if you have it pointed at the same place your fi
 Requirements:
 * smloadr downloaded & ideally added to your path, if not you would need to edit the smloadr download line towards the end to point at the location it's in. <br>
 * rclone downloaded & idealy added to your path,  if not you would need to edit the rclone copy line towards the end to point at the location it's in. Only required if you're planning on using rclone, if not you can just remove/comment out this line.<br>
-Edit lines 1-10 to fill in your variables. <br>
+
+Varriables. Edit lines 1-10 to fill in your variables: <br>
 * $scriptdir is where you want your script to store its logfile and store the batch file with all artist IDs.<br>
 * $downloaddir is where you want smloadr to download its files to. This doesn't have to be in the same location or even drive as $scriptdir.<br>
 * $lidarrurl is either the domain or IP of the machine running lidarr.<br>
