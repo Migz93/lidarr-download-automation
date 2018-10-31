@@ -23,3 +23,5 @@ Sometimes last album is not available from lidarr so it will fall back to search
 It's fairly accurate and out of about 170ish artists it's accurately matched about 160 of them. Although bear in mind if it does match incorrectly it can be a large mistake I.e having dua lipa in lidarr ends up matching to https://www.deezer.com/us/artist/1198498 which ends up as a 100GB+ download.<br>
 You can manually add in your own deezer artist IDs into the generated "lidarr-smloadr.txt" file to fix any incorrect grabs, theres no way yet to remove the incorrect grabs though so it will also download those.<br>
 You can review the log file generated in the $scriptdir, this log shows the deezer url returned for the artist, along with the specific search query that was used to find this.<br>
+
+Lidarr should pick up the files if you have it pointed at the same place your files download.
