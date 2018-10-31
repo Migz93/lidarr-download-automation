@@ -13,7 +13,7 @@ It will pull all your artists set up in lidarr and then go through these one by 
 Using artist name & the artists last album it will search on deezer, taking the first hit and saving this to a txt file which can then be used in smloadr.<br>
 Sometimes last album is not available from lidarr so it will fall back to searching with just the artist name.<br>
 
-Even though this is a very very simple search of just searching with artist name + last album or just artist name, it's sitll fairly accurate and out of 169 artists it's correctly matched 161 of them. Although bear in mind if it does match incorrectly it can sometimes be a large mistake I.e having dua lipa in lidarr ends up matching to https://www.deezer.com/us/artist/1198498 which ends up as a 100GB+ download.<br>
+Even though this is a very very simple search of just searching with artist name + last album or just artist name, it's still fairly accurate and out of 169 artists it's correctly matched 161 of them. Although bear in mind if it does match incorrectly it can sometimes be a large mistake I.e having "Dua Lipa" in lidarr ends up matching to https://www.deezer.com/us/artist/1198498 which ends up as a 100GB+ download.<br>
 You can manually add in your own deezer artist IDs into the generated "lidarr-smloadr.txt" file to fix any incorrect grabs, theres no way yet to remove the incorrect grabs though so it will also download those.<br>
 You can review the log file generated in the $scriptdir, this log shows the deezer url returned for the artist, along with the specific search query that was used to find this.<br>
 
