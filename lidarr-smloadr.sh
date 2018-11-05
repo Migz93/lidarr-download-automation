@@ -28,6 +28,14 @@ do
 	wantedArtist=$(cat $scriptDir/artists-lidarr.json | jq -r ".[$i].sortName")
 	#create lastAlbum variable from lastAlbum provided by lidarr.
 	lastAlbum=$(cat $scriptDir/artists-lidarr.json | jq -r ".[$i].lastAlbum | .title")
+	#Attempt to pull deezer link directly from lidarr if it is provided by musicbrainz.
+	wantedArtistID=$(cat $scriptDir/artists-lidarr.json | jq -r ".[$i].links | .[]")
+	wantedArtistID=$(echo $wantedArtistID | jq 'select(.name=="deezer") | .url')
+	
+	#If deezer link not provided by lidarr then fall back to search method.
+	if [ "$wantedArtistID" = "" ];
+	then
+	lidarrGrab="False"
 	#Check if lastAlbum variable doesn't exist. Sometimes this isn't provided by lidarr.
 		if [ "$lastAlbum" = "null" ];
 		then
@@ -35,33 +43,49 @@ do
 			searchQuery="https://api.deezer.com/search?q=$wantedArtist"
 			#Encode searchQuery in a url encodable format.
 			searchQuery=$(/usr/bin/python -c "import urllib, sys; print urllib.quote(sys.argv[1])"  "$searchQuery")
-			wantedArtistID=$(curl -s https://api.deezer.com/search?q=$searchQuery | jq -r ".data | .[0] | .artist | .id")
+			wantedArtistID=$(curl -s https://api.deezer.com/search?q=$searchQuery | jq -r ".data | .[0] | .artist | .id")	
 		else
-			#Otherwise if lastAlbum variable exists. Generate searchQuery variable take first result and set the artistID from deezer as variable wantedartistid.
+			#Otherwise if lastAlbum variable exists. Generate searchQuery variable, take first result and set the artistID from deezer as variable wantedArtistID.
 			searchQuery="$wantedArtist%20$lastAlbum"
 			#Encode searchQuery in a url encodable format.
 			searchQuery=$(/usr/bin/python -c "import urllib, sys; print urllib.quote(sys.argv[1])"  "$searchQuery")
 			wantedArtistID=$(curl -s https://api.deezer.com/search?q=$searchQuery | jq -r ".data | .[0] | .artist | .id")
-			#Check if wantedArtistID is empty following search, if so it means no results were found.
+			#Check if wantedArtistID is empty following search, if so it means no results were found, fall back to searching with just artist.
 			if [ "$wantedArtistID" = "null" ];
 			then
 				searchQuery="$wantedArtist"
+				#Encode searchQuery in a url encodable format.
+				searchQuery=$(/usr/bin/python -c "import urllib, sys; print urllib.quote(sys.argv[1])"  "$searchQuery")
 				wantedArtistID=$(curl -s https://api.deezer.com/search?q=$searchQuery | jq -r ".data | .[0] | .artist | .id")
 			fi
 		fi
+	else
+	lidarrGrab="True"
+	fi
+
+if [ "$lidarrGrab" = "True" ];
+then
 	#Save output to log file. Save wantedArtistID to wantedArtistID.txt file which will be used by smloadr.
-	echo "SMloadr url for $wantedArtist - https://www.deezer.com/artist/$wantedArtistID found using $searchQuery" >> $scriptDir/lidarr-smloadr.log
-	echo "SMloadr url for artist $i - $wantedArtist - https://www.deezer.com/artist/$wantedArtistID found using https://api.deezer.com/search?q=$searchQuery"
+	echo "SMloadr url for $wantedArtist - $wantedArtistID found using data from lidarr." >> $scriptDir/lidarr-smloadr.log
+	echo "SMloadr url for artist $i - $wantedArtist - $wantedArtistID found using data from lidarr."
+else
+	#Save output to log file. Save wantedArtistID to wantedArtistID.txt file which will be used by smloadr.
+	echo "SMloadr url for $wantedArtist - https://www.deezer.com/artist/$wantedArtistID found using search query $searchQuery" >> $scriptDir/lidarr-smloadr.log
+	echo "SMloadr url for artist $i - $wantedArtist - https://www.deezer.com/artist/$wantedArtistID found using search query https://api.deezer.com/search?q=$searchQuery"
+fi
+	
+	#Save output to log file. Save wantedArtistID to wantedArtistID.txt file which will be used by smloadr.
 	echo $wantedArtistID >> $scriptDir/wantedArtistID.txt
 
 	#Small sleep to not hammer deezer with api search requests.
 	sleep .25s
 done
 
-#Take all entries from wantedArtistID.txt remove any duplicates, save into temp file, remove original file, rename temp file back to original.
-awk '!a[$0]++' $scriptDir/wantedArtistID.txt > $scriptDir/wantedArtistID-temp.txt
-rm -rf $scriptDir/wantedArtistID.txt
-mv $scriptDir/wantedArtistID-temp.txt $scriptDir/wantedArtistID.txt
+#Take all entries from wantedArtistID.txt remove anything that isn't a number, save into temp file, move temp file back to original.
+sed 's/[^0-9]*//g' $scriptDir/wantedArtistID.txt > $scriptDir/wantedArtistID-temp.txt && mv $scriptDir/wantedArtistID-temp.txt $scriptDir/wantedArtistID.txt
+
+#Take all entries from wantedArtistID.txt remove any duplicates, save into temp file, move temp file back to original.
+awk '!a[$0]++' $scriptDir/wantedArtistID.txt > $scriptDir/wantedArtistID-temp.txt && mv $scriptDir/wantedArtistID-temp.txt $scriptDir/wantedArtistID.txt
 
 #Load IDs from wantedArtistID.txt file and Loop through each ID from smloadrartists.
 smloadrArtists=$(cat "$scriptDir/wantedArtistID.txt")
@@ -70,3 +94,5 @@ for smloadrArtist in $smloadrArtists;
 	#Download smloadrArtist with smloadr to downloadDir.
 	./SMLoadr-linux-x64 -q MP3_320 -p $downloadDir https://www.deezer.com/artist/$smloadrArtist
 done
+
+echo "Task Complete"
