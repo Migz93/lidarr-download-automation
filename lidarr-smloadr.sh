@@ -40,7 +40,7 @@ do
 		if [ "$lastAlbum" = "null" ];
 		then
 			#Search deezer using only artist name. Not as accurate as using with last album name but better then nothing.
-			searchQuery="https://api.deezer.com/search?q=$wantedArtist"
+			searchQuery="$wantedArtist"
 			#Encode searchQuery in a url encodable format.
 			searchQuery=$(/usr/bin/python -c "import urllib, sys; print urllib.quote(sys.argv[1])"  "$searchQuery")
 			wantedArtistID=$(curl -s https://api.deezer.com/search?q=$searchQuery | jq -r ".data | .[0] | .artist | .id")	
