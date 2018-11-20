@@ -3,12 +3,12 @@
 scriptDir="/opt/smloadr/lidarr"
 #Directory that you want smloadr to download to.
 downloadDir="/mnt/unionfs/Media/Music/"
-#Set domain or IP to your lidarr instance
+#Set domain or IP to your lidarr instance including port. If using reverse proxy, do not use a trailing slash.
 lidarrUrl="192.168.1.x"
-#Set port that ldiarr runs on, must begin with ":"
-lidarrPort=":8686"
 #Lidarr api key
 lidarrApiKey="08d108d108d108d108d108d108d108d1"
+#Quality setting (MP3_128,MP3_320,FLAC)
+quality="MP3_320"
 
 #Test if script dir doesn't exist, if true then create directory.
 if [ ! -d "$scriptDir" ]; then
@@ -16,7 +16,7 @@ if [ ! -d "$scriptDir" ]; then
 fi
 
 echo "Collecting data from lidarr, this may take some time depending on how many artists you have." 
-curl "$lidarrUrl$lidarrPort/api/v1/Artist/?apikey=$lidarrApiKey" -o $scriptDir/artists-lidarr.json
+curl "$lidarrUrl/api/v1/Artist/?apikey=$lidarrApiKey" -o $scriptDir/artists-lidarr.json
 artists=$(cat $scriptDir/artists-lidarr.json | jq -r '.[].sortName')
 
 totalArtists=$(wc -l <<< "$artists")
@@ -92,7 +92,7 @@ smloadrArtists=$(cat "$scriptDir/wantedArtistID.txt")
 for smloadrArtist in $smloadrArtists;
 	do
 	#Download smloadrArtist with smloadr to downloadDir.
-	./SMLoadr-linux-x64 -q MP3_320 -p $downloadDir https://www.deezer.com/artist/$smloadrArtist
+	./SMLoadr-linux-x64 -q $quality -p $downloadDir https://www.deezer.com/artist/$smloadrArtist
 done
 
 echo "Task Complete"
