@@ -1,13 +1,16 @@
 #!/bin/bash
+
 #Directory that you want log file & artist ID batch file to be stored.
 scriptDir="/opt/smloadr/lidarr"
 #Directory that you want smloadr to download to.
 downloadDir="/mnt/unionfs/Media/Music/"
-#Set domain or IP to your lidarr instance including port. If using reverse proxy, do not use a trailing slash.
+#Set domain or IP to your lidarr instance
 lidarrUrl="192.168.1.x"
 #Lidarr api key
 lidarrApiKey="08d108d108d108d108d108d108d108d1"
-#Quality setting (MP3_128,MP3_320,FLAC)
+#Fallback to searching if lidarr doesn't provide deezer ID, only supports "true", if anything else it won't fallback.
+fallbackSearch="true"
+#SMLoadr Download Quality setting (MP3_128,MP3_320,FLAC)
 quality="MP3_320"
 
 #Test if script dir doesn't exist, if true then create directory.
@@ -32,8 +35,8 @@ do
 	wantedArtistID=$(cat $scriptDir/artists-lidarr.json | jq -r ".[$i].links | .[]")
 	wantedArtistID=$(echo $wantedArtistID | jq 'select(.name=="deezer") | .url')
 	
-	#If deezer link not provided by lidarr then fall back to search method.
-	if [ "$wantedArtistID" = "" ];
+	#If deezer link not provided by lidarr then fall back to search method if enabled.
+	if [ "$wantedArtistID" = "" ] && [ "$fallbackSearch" = "true" ];
 	then
 	lidarrGrab="False"
 	#Check if lastAlbum variable doesn't exist. Sometimes this isn't provided by lidarr.
@@ -61,20 +64,30 @@ do
 		fi
 	else
 	lidarrGrab="True"
+	if [ "$wantedArtistID" = "" ] && [ "$fallbackSearch" = "false" ];
+	then
+		lidarrGrab=""
+	fi
 	fi
 
 if [ "$lidarrGrab" = "True" ];
 then
 	#Save output to log file. Save wantedArtistID to wantedArtistID.txt file which will be used by smloadr.
-	echo "SMloadr url for $wantedArtist - $wantedArtistID found using data from lidarr." >> $scriptDir/lidarr-smloadr.log
-	echo "SMloadr url for artist $i - $wantedArtist - $wantedArtistID found using data from lidarr."
-else
+	echo "$wantedArtistID found for artist $i - $wantedArtist - Found using data from Lidarr." >> $scriptDir/lidarr-smloadr.log
+	echo "$wantedArtistID found for artist $i - $wantedArtist - Found using data from Lidarr."
+elif [ "$lidarrGrab" = "False" ];
+then
 	#Save output to log file. Save wantedArtistID to wantedArtistID.txt file which will be used by smloadr.
-	echo "SMloadr url for $wantedArtist - https://www.deezer.com/artist/$wantedArtistID found using search query $searchQuery" >> $scriptDir/lidarr-smloadr.log
-	echo "SMloadr url for artist $i - $wantedArtist - https://www.deezer.com/artist/$wantedArtistID found using search query https://api.deezer.com/search?q=$searchQuery"
+	echo "https://www.deezer.com/artist/$wantedArtistID found for artist $i - $wantedArtist - Found using search query https://api.deezer.com/search?q=$searchQuery" >> $scriptDir/lidarr-smloadr.log
+	echo "https://www.deezer.com/artist/$wantedArtistID found for artist $i - $wantedArtist - Found using search query https://api.deezer.com/search?q=$searchQuery"
+elif [ "$lidarrGrab" = "" ];
+then
+	#Save output to log file. Save wantedArtistID to wantedArtistID.txt file which will be used by smloadr.
+	echo "Nothing found for artist $i - $wantedArtist. Possibly fallbackSearch is not enabled?" >> $scriptDir/lidarr-smloadr.log
+	echo "Nothing found for artist $i - $wantedArtist. Possibly fallbackSearch is not enabled?"
 fi
 	
-	#Save output to log file. Save wantedArtistID to wantedArtistID.txt file which will be used by smloadr.
+	#Save wantedArtistID to wantedArtistID.txt file which will be used by smloadr.
 	echo $wantedArtistID >> $scriptDir/wantedArtistID.txt
 
 	#Small sleep to not hammer deezer with api search requests.
@@ -92,6 +105,7 @@ smloadrArtists=$(cat "$scriptDir/wantedArtistID.txt")
 for smloadrArtist in $smloadrArtists;
 	do
 	#Download smloadrArtist with smloadr to downloadDir.
+	echo "Downloading Deezer ID - $smloadrArtist with SMLoadr now."
 	./SMLoadr-linux-x64 -q $quality -p $downloadDir https://www.deezer.com/artist/$smloadrArtist
 done
 
