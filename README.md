@@ -28,12 +28,13 @@ Requirements:
 * jq installed (sudo apt-get install jq)
 * python version 2.7 installed (sudo apt-get install python)
 
-Varriables. Edit lines 1-10 to fill in your variables: <br>
-* scriptDir is where you want your script to store its logfile and store the batch file with all artist IDs.<br>
-* downloadDir is where you want smloadr to download its files to. This doesn't have to be in the same location or even drive as scriptdir.<br>
-* lidarrUrl is either the domain or IP of the machine running lidarr.<br>
-* lidarrPort is the port that lidarr runs on.<br>
-* lidarrApikey is the api key that can be grabbed from Lidarr > Settings > General<br>
+Varriables. Edit lines 1-14 to fill in your variables: <br>
+* scriptDir - #Directory that you want log file & artist ID batch file to be stored.<br>
+* downloadDir - Directory that you want smloadr to download to.<br>
+* lidarrUrl - iSet domain or IP to your lidarr instance including port. If using reverse proxy, do not use a trailing slash.<br>
+* lidarrApikey - Lidarr api key.<br>
+* fallbackSearch - Fallback to searching if lidarr doesn't provide deezer ID, only supports "true", if anything else it won't fallback.
+* quality - SMLoadr Download Quality setting (MP3_128,MP3_320,FLAC)
 
 Tested and working on Ubuntu 16.04 but should work on later versions
 
@@ -45,10 +46,10 @@ Requirements:
 * rclone downloaded & idealy added to your path,  if not you would need to edit the rclone copy line towards the end to point at the location it's in. Only required if you're planning on using rclone, if not you can just remove/comment out this line.<br>
 
 Varriables. Edit lines 1-10 to fill in your variables: <br>
-* $scriptdir is where you want your script to store its logfile and store the batch file with all artist IDs.<br>
-* $downloaddir is where you want smloadr to download its files to. This doesn't have to be in the same location or even drive as $scriptdir.<br>
+* $scriptDir - #Directory that you want log file & artist ID batch file to be stored.<br>
+* $downloadDir - Directory that you want smloadr to download to.<br>
 * $lidarrurl is either the domain or IP of the machine running lidarr.<br>
 * $lidarrport is the port that lidarr runs on.<br>
-* $lidarrapikey is the api key that can be grabbed from Lidarr > Settings > General<br>
+* $lidarrApikey - Lidarr api key.<br>
 
 Tested and working on Windows 10.
