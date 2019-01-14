@@ -4,7 +4,7 @@
 scriptDir="/opt/smloadr/lidarr"
 #Directory that you want smloadr to download to.
 downloadDir="/mnt/unionfs/Media/Music/"
-#Set domain or IP to your lidarr instance including port. If using reverse proxy, do not use a trailing slash.
+#Set domain or IP to your lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
 lidarrUrl="192.168.1.x"
 #Lidarr api key
 lidarrApiKey="08d108d108d108d108d108d108d108d1"
@@ -15,7 +15,7 @@ quality="MP3_320"
 
 #Test if script dir doesn't exist, if true then create directory.
 if [ ! -d "$scriptDir" ]; then
-  mkdir $scriptDir
+  mkdir -p $scriptDir
 fi
 
 echo "Collecting data from lidarr, this may take some time depending on how many artists you have." 
