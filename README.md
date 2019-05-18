@@ -1,4 +1,4 @@
-# lidarr-smloadr-script 
+# lidarr_smloadr_script 
 Bash & powershell scripts to download artists in lidarr using smloadr.
 
 I created this to fill a need i had, i have lidarr installed but it doesn't grab many releases which is more a fault of my lack of indexers but still. <br>
