@@ -15,13 +15,13 @@ This script has two modes (configured by changing the "mode" paramater in the co
 <b>Wanted:</b><br>
 This it the prefered mode to use, with this option the script will check all artists & check their last album and attempt to find the Deezer ID from this data. If it fails and the "EnableFuzzyAlbumSearch" paramater is "True" then it will fall back to carrying out a fuzzy search of Deezer using the Artist Name & Last Album Name. If it's still unable to find a Deezer ID then the artist will be saved to the skiplog file configured in config. 
 
-Once a Deezer ID has been identified it will then pass this through to smloadr to download, downloading to the path & at the quality speecified within config.
+Once a Deezer ID has been identified it will then pass this through to smloadr to download, downloading to the path & at the quality speecified within config. Note it will only download the ammount of albums configured under "wantedalbumsamount" each time that the script runs.
 
-If "EnableLidarrProcess" is set to "True" then once the download is complete it will inform Lidarr of the download location, allowing Lidarr to match & import these files.
+If "EnableLidarrProcess" is set to "True" then once the download is complete it will inform Lidarr of the download location, allowing Lidarr to match & import these files.<br>
 This mode will only download albums/EPs/singles/ect that you have actually set to monitored within Lidarr.
 
 <b>Artist:</b><br>
-This is the way the original legacy script would use, with this option the script will check all artists & check their last album and attempt to find the Deezer ID from this dat. If it fails then it will fall back to carrying out a fuzzy search of Deezer using the Artist Name & Last Album Name. If it's still unable to find a Deezer ID then the artist will be saved to the skiplog file configured in config.
+This is the way the original legacy script would use, with this option the script will check all artists & check their last album and attempt to find the Deezer ID from this dat. If it fails then it will fall back to carrying out a fuzzy search of Deezer using the Artist Name & Last Album Name. If it's still unable to find a Deezer ID then the artist will be saved to the skiplog file configured in config.<br>
 This mode will download everything by the artist that Deezer provides, so you can end up with a lot of unwanted albums/EPs/singles/ect.
 
 # Config
