@@ -1,13 +1,13 @@
 # lidarr-smloadr-script 
-Bash & powershell scripts to download artists in Lidarr using smloadr.
+Bash script to download artists in Lidarr using smloadr.
 
 I created the original version of this to fill a need i had, i have Lidarr installed but it doesn't grab many releases which is more a fault of my lack of indexers but still. <br>
 I found out about smloadr and tried to download every single artist, this left me with a lot of junk that i'd never listen to. I then tried just downloading genres i like but again left me with a lot of junk i'd never listen to.<br>
 
 So i set about trying to find something that would bridge the gap between the artists i have monitored in Lidarr & downloading them with smloadr, I couldn't find anything at all for this so i set about creating my own script to do this.<br>
-See scripts within [Legacy](Legacy/) folder.
+See bash & powershell scripts within [Legacy](Legacy/) folder.
 
-[permutationalparody](https://github.com/permutationalparody) then improved the script in various ways, including adding a seperate config file, adding an option to only search for albums/EPs/singles/ect that are set to monitored in Lidarr, add an option to allow Lidarr to import the downloaded files and generally tidied up the code a large ammount.
+[permutationalparody](https://github.com/permutationalparody) then improved the bash script in various ways, including adding a seperate config file, adding an option to only search for albums/EPs/singles/ect that are set to monitored in Lidarr, add an option to allow Lidarr to import the downloaded files and generally tidied up the code a large ammount.
 
 # Modes
 This script has two modes (configured by changing the "mode" paramater in the config file):
@@ -25,7 +25,7 @@ This is the way the original legacy script would use, with this option the scrip
 This mode will download everything by the artist that Deezer provides, so you can end up with a lot of unwanted albums/EPs/singles/ect.
 
 # Config
-Edit the "config.sample" file, fill your paramaters and save as "config".
+Edit the "config.sample" file, fill your paramaters and save as "config".<br>
 * scriptDir - 				Directory that you want log file & artist ID batch file to be stored.<br>
 * downloadDir - 			Directory that you want smloadr to download to.<br>
 * LidarrUrl - 				Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash.<br>
@@ -35,7 +35,7 @@ Edit the "config.sample" file, fill your paramaters and save as "config".
 * skiplogname -				Logs any info if an item was skipped.<br>
 * mode -					Mode to choose what to scrape from Lidarr, wanted gets only the albums that are marked wanted, artist gets all the albums from the monitored artists.<br>
 
-Below are only used if "mode" is set to "wanted".
+Below are only used if "mode" is set to "wanted".<br>
 * wantedalbumsamount -		The amount of wanted albums to process it will grab the newest x amount of albums from the Lidarr wanted list.<br>
 * EnableLidarrProcess -		Set to True to instruct Lidarr to process the download once smloadr finishes.<br>
 * EnableFuzzyAlbumSearch -	Set to True to enable fuzzy album search if theres no exact match.<br>
