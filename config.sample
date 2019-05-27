@@ -1,6 +1,6 @@
-##rename this file to config and enter in your parameters
+##rename this file to "config" and enter in your parameters
 
-#Directory that you want log file & artist ID batch file to be stored.
+#Directory that you want log files to be stored.
 scriptDir="/opt/smloadr/lidarr"
 #Directory that you want smloadr to download to.
 downloadDir="/mnt/unionfs/Media/Music/"
@@ -10,18 +10,17 @@ lidarrUrl="http://192.168.1.x:8686"
 lidarrApiKey="08d108d108d108d108d108d108d108d1"
 #SMLoadr Download Quality setting (MP3_128,MP3_320,FLAC)
 quality="MP3_320"
-##mode to choose what to scrape from lidarr, wanted gets only the albums that are marked wanted, artist gets all the albums from the monitored artists
+#logfilename
+logname=smloadr-script.log
+#logs any info if an item was skipped
+skiplogname=skipped.csv
+#mode to choose what to passthrough to smloadr, "wanted" gets only the albums that are marked as monitored in lidarr, "artist" will just passthrough the artist. (wanted,artist) 
 mode=wanted
-#mode=artist
 
-##only used if mode = wanted
+#The below config is only used if mode = wanted
 #The amount of wanted albums to process it will grab the newest x amount of albums from the lidarr wanted list
 wantedalbumsamount=10
-##logfilename
-logname=lodarr-smloadr-script2.log
-##logs any info if an item was skipped
-skiplogname=skipped.csv
-##set to True to instruct Lidarr to process the download once smloadr finishes
+#set to True to instruct Lidarr to process the download once smloadr finishes
 EnableLidarrProcess=True
-##set to True to enable fuzzy album search if theres no exact match
+#set to True to enable fuzzy album search if theres no exact match
 EnableFuzzyAlbumSearch=True
