@@ -1,4 +1,16 @@
-# lidarr_smloadr_script 
+# modified usage
+Edit the "config.sample" file  with your variables and save as config
+run lidarr-smloadr2.sh
+
+# what changed
+Added a config file.<br>
+Added a way to grab albums marked as wanted in lidarr instead of everything by an artist. Change mode=wanted in config to use it, change mode=artist to use the old method.<br>
+Added a connection to Lidarr to allow automatic importing of downloads.<br>
+Removed dependency on python.<br>
+
+The powershell version remains unchanged
+
+# lidarr-smloadr-script 
 Bash & powershell scripts to download artists in lidarr using smloadr.
 
 I created this to fill a need i had, i have lidarr installed but it doesn't grab many releases which is more a fault of my lack of indexers but still. <br>
