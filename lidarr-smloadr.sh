@@ -97,7 +97,36 @@ DownloadURL(){
 	logit "Download Complete"
 }
 
+CleanStart(){
+	if [ "${CannotImport}" = True ];then
+		logit "Removing previously downloaded files form smloadr downloads directory"
+		rm -rf ${downloadDir}/*
+	else
+		logit "Skipping CleanStart"
+	fi
+}
 
+Cleanup(){
+	if [ "${KeepOnly}" = True ];then
+		if [ "${quality}" = FLAC ];then
+			logit "Removing unwanted MP3's"
+			find ${downloadDir}/. -name "*.mp3" -type f -delete
+		else
+			logit "Removing unwanted FLAC's"
+			find ${downloadDir}/. -type f -name "*.flac" -type f -delete
+		fi
+	else
+		logit "Skipping KeepOnly Quality Cleanup"
+	fi
+	if [ "${CannotImport}" = True ];then
+		logit "Removing files that cannot be imported to Lidarr and empty folders"
+		find ${downloadDir}/. -type f -name "*.lrc" -type f -delete
+		find ${downloadDir}/. -type f -name "*.jpg" -type f -delete
+		find ${downloadDir}/ -empty -type d -delete
+	else
+		logit "Skipping Unwanted file removal"
+	fi
+}
 
 ErrorExit(){
 	case ${2} in
@@ -161,10 +190,13 @@ WantedModeBegin(){
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName};${DeezerDiscogArr[*]}"
 			continue
 		fi
+		Cleanup
 		if [ "${EnableLidarrProcess}" = True ] && [ -n "${LidArtistDLName}" ];then
 				logit "Sending to Lidarr for post Processing"
-				dlloc="${downloadDir}/${LidArtistDLName}/"
-				LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":"'"$dlloc"'"}' );
+				dlloc=${downloadDir}/*
+				for d in $dlloc; do
+					LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":"'"$d"'"}' );
+				done
 		else
 			logit "Skipping Lidarr Processing"
 		fi
@@ -196,19 +228,30 @@ ArtistModeBegin(){
 		echo "-Querying"
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${DeezerArtistURL}" ]; then
 			DownloadURL "${DeezerArtistURL}"
-			logit "DeezerArtistURL: ${DeezerArtistURL}"
+			logit "DeezerArtistURL: ${DeezerArtistURL}"			
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping" 
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 			continue
 		fi
 	done
+	Cleanup
+	if [ "${EnableLidarrProcess}" = True ];then
+		logit "Sending to Lidarr for post Processing"
+		dlloc=${downloadDir}/*
+		for d in $dlloc; do
+			LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":"'"$d"'"}' );
+		done
+	else
+		logit "Skipping Lidarr Processing"
+	fi
 }
 
 main(){
 	echo "Starting up"
 	source ./config || ErrorExit "Configuration file not found" 2
 	InitLogs
+	CleanStart
 	case "${mode}" in 
 		wanted)	WantedModeBegin;;
 		artist) ArtistModeBegin;;

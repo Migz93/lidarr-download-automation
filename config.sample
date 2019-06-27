@@ -10,17 +10,27 @@ lidarrUrl="http://192.168.1.x:8686"
 lidarrApiKey="08d108d108d108d108d108d108d108d1"
 #SMLoadr Download Quality setting (MP3_128,MP3_320,FLAC)
 quality="MP3_320"
+#Keeps only quality type selected above
+KeepOnly=False
 #logfilename
 logname=smloadr-script.log
 #logs any info if an item was skipped
 skiplogname=skipped.csv
+#set to True to delete files and empty folders that cannot be imported by Lidarr ".lrc" & ".jpg" files
+CannotImport=False
+#When set to True, smloadr downloads directory contents is purged on initialization
+CleanStart=False
 #mode to choose what to passthrough to smloadr, "wanted" gets only the albums that are marked as monitored in lidarr, "artist" will just passthrough the artist. (wanted,artist) 
 mode=wanted
+#When set to True, you will enable the downloaded files to be moved and picked up by other applications/scripts that you have setup. This replaces scripts Lidarr import process.
+ExternalProcess=False
+#Directory that you want to move downloaded files to for processing with other scripts or applications such as Beets
+externalprocessdirectory=/opt/beets/import
+#set to True to instruct Lidarr to process the download once smloadr finishes
+EnableLidarrProcess=True
 
 #The below config is only used if mode = wanted
 #The amount of wanted albums to process it will grab the newest x amount of albums from the lidarr wanted list
 wantedalbumsamount=10
-#set to True to instruct Lidarr to process the download once smloadr finishes
-EnableLidarrProcess=True
 #set to True to enable fuzzy album search if theres no exact match
 EnableFuzzyAlbumSearch=True

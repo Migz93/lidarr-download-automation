@@ -31,13 +31,18 @@ Edit the "config.sample" file, fill your paramaters and save as "config".<br>
 * LidarrUrl - 				Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash.<br>
 * LidarrApikey - 			Lidarr api key.<br>
 * quality - 				SMLoadr Download Quality setting (MP3_128,MP3_320,FLAC).<br>
+* KeepOnly -					Keeps only the requested Download Quality<br>
 * logname -					Log file name.<br>
 * skiplogname -				Logs any info if an item was skipped.<br>
+* CannotImport -				Removes files that cannot be imported by Lidarr automatically (.jpg, .lrc).<br>
+* CleanStart -				Purges files from SMLoadr Download directory at start of script<br>
 * mode -					Mode to choose what to scrape from Lidarr, wanted gets only the albums that are marked wanted, artist gets all the albums from the monitored artists.<br>
+* ExternalProcess -				Enables the downloaded files to be moved and picked up by other applications/scripts that you have setup. This replaces the EnableLidarrProccess import process.<br>
+* externalprocessdirectory -				Directory that you want to move downloaded files to for processing with other scripts or applications such as Beets.<br>
+* EnableLidarrProcess -		Set to True to instruct Lidarr to process the download once smloadr finishes.<br>
 
 Below are only used if "mode" is set to "wanted".<br>
 * wantedalbumsamount -		The amount of wanted albums to process it will grab the newest x amount of albums from the Lidarr wanted list.<br>
-* EnableLidarrProcess -		Set to True to instruct Lidarr to process the download once smloadr finishes.<br>
 * EnableFuzzyAlbumSearch -	Set to True to enable fuzzy album search if theres no exact match.<br>
 
 # Requirements
