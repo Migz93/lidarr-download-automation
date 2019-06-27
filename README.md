@@ -8,6 +8,7 @@ So i set about trying to find something that would bridge the gap between the ar
 See bash & powershell scripts within [Legacy](Legacy/) folder.
 
 [permutationalparody](https://github.com/permutationalparody) then improved the bash script in various ways, including adding a seperate config file, adding an option to only search for albums/EPs/singles/ect that are set to monitored in Lidarr, add an option to allow Lidarr to import the downloaded files and generally tidied up the code a large ammount.
+[RandomNinjaAtk](https://github.com/RandomNinjaAtk) improved even further by adding some cleanup functions, a fix for lidarr import, allowing the option for external processing of the file.
 
 # Modes
 This script has two modes (configured by changing the "mode" paramater in the config file):
@@ -55,3 +56,4 @@ Lidarr collects its information from https://musicbrainz.org which is open to an
 
 Original Script: Myself<br>
 Improved Script:[permutationalparody](https://github.com/permutationalparody)<br>
+Further Imrpovements: [RandomNinjaAtk](https://github.com/RandomNinjaAtk)<br>
