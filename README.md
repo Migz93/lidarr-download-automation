@@ -7,7 +7,7 @@ I found out about smloadr and tried to download every single artist, this left m
 So i set about trying to find something that would bridge the gap between the artists i have monitored in Lidarr & downloading them with smloadr, I couldn't find anything at all for this so i set about creating my own script to do this.<br>
 See bash & powershell scripts within [Legacy](Legacy/) folder.
 
-[permutationalparody](https://github.com/permutationalparody) then improved the bash script in various ways, including adding a seperate config file, adding an option to only search for albums/EPs/singles/ect that are set to monitored in Lidarr, add an option to allow Lidarr to import the downloaded files and generally tidied up the code a large ammount.
+[permutationalparody](https://github.com/permutationalparody) then improved the bash script in various ways, including adding a seperate config file, adding an option to only search for albums/EPs/singles/ect that are set to monitored in Lidarr, add an option to allow Lidarr to import the downloaded files and generally tidied up the code a large ammount.<br>
 [RandomNinjaAtk](https://github.com/RandomNinjaAtk) improved even further by adding some cleanup functions, a fix for lidarr import, allowing the option for external processing of the file.
 
 # Modes
@@ -55,5 +55,5 @@ Below are only used if "mode" is set to "wanted".<br>
 Lidarr collects its information from https://musicbrainz.org which is open to anyone to edit, so if the Deezer ID in Lidarr is incorrect or missing you can sign up for an account and ammend/add this yourself.
 
 Original Script: Myself<br>
-Improved Script:[permutationalparody](https://github.com/permutationalparody)<br>
-Further Imrpovements: [RandomNinjaAtk](https://github.com/RandomNinjaAtk)<br>
+Improved Script: [permutationalparody](https://github.com/permutationalparody)<br>
+Further Improvements: [RandomNinjaAtk](https://github.com/RandomNinjaAtk)<br>
