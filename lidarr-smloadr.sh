@@ -98,7 +98,7 @@ DownloadURL(){
 }
 
 CleanStart(){
-	if [ "${CannotImport}" = True ];then
+	if [ "${CleanStart}" = True ];then
 		logit "Removing previously downloaded files form smloadr downloads directory"
 		rm -rf ${downloadDir}/*
 	else
@@ -127,6 +127,21 @@ Cleanup(){
 		logit "Skipping Unwanted file removal"
 	fi
 }
+
+ExternalProcess(){
+	if [ "${ExternalProcess}" = True ];then
+		dlloc=${downloadDir}/*
+		for d in $dlloc; do
+			logit "Moving Downloads"
+			mv "$d" ${externalprocessdirectory}
+		done
+		rm -rf ${downloadDir}/*
+	else
+			logit "Skipping External Processing"
+	fi
+	sleep 3s
+}
+
 
 ErrorExit(){
 	case ${2} in
@@ -191,14 +206,18 @@ WantedModeBegin(){
 			continue
 		fi
 		Cleanup
-		if [ "${EnableLidarrProcess}" = True ] && [ -n "${LidArtistDLName}" ];then
-				logit "Sending to Lidarr for post Processing"
-				dlloc=${downloadDir}/*
-				for d in $dlloc; do
-					LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":"'"$d"'"}' );
-				done
+		if [ "${ExternalProcess}" = True ];then
+			ExternalProcess
 		else
-			logit "Skipping Lidarr Processing"
+			if [ "${EnableLidarrProcess}" = True ];then
+					logit "Sending to Lidarr for post Processing"
+					dlloc=${downloadDir}/*
+					for d in $dlloc; do
+						LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":"'"$d"'"}' );
+					done
+			else
+				logit "Skipping Lidarr Processing"
+			fi
 		fi
 	done
 }
@@ -236,14 +255,18 @@ ArtistModeBegin(){
 		fi
 	done
 	Cleanup
-	if [ "${EnableLidarrProcess}" = True ];then
-		logit "Sending to Lidarr for post Processing"
-		dlloc=${downloadDir}/*
-		for d in $dlloc; do
-			LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":"'"$d"'"}' );
-		done
+	if [ "${ExternalProcess}" = True ];then
+		ExternalProcess
 	else
-		logit "Skipping Lidarr Processing"
+		if [ "${EnableLidarrProcess}" = True ];then
+			logit "Sending to Lidarr for post Processing"
+			dlloc=${downloadDir}/*
+			for d in $dlloc; do
+				LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":"'"$d"'"}' );
+			done
+		else
+				logit "Skipping Lidarr Processing"
+		fi
 	fi
 }
 
