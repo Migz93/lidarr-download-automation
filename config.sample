@@ -4,6 +4,8 @@
 scriptDir="/opt/smloadr/lidarr"
 #Directory that you want smloadr to download to.
 downloadDir="/mnt/unionfs/Media/Music/"
+#set to true if youre running lidarr on windows and this script on subsystem for linux
+EnableWSLmode=False
 #Set domain or IP to your lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
 lidarrUrl="http://192.168.1.x:8686"
 #Lidarr api key
