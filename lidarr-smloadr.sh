@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ArtistsLidarrReq(){
-	wantit=$(curl -s --header "X-Api-Key:"${lidarrApiKey} --request GET  "$lidarrUrl/api/v1/Artist/")
+	wantit=$(curl -s --header "X-Api-Key:"${LidarrApiKey} --request GET  "$LidarrUrl/api/v1/Artist/")
 }
 GetTotalArtistsLidarrReq(){
 	TotalLidArtistNames=$(echo "${wantit}"|jq -r '.[].sortName' |wc -l  )
@@ -30,7 +30,7 @@ ProcessArtistsLidarrReq(){
 }
 
 AlbumsLidarrReq(){
-	wantit=$(curl -s --header "X-Api-Key:"${lidarrApiKey} --request GET  "$lidarrUrl/api/v1/wanted/missing/?page=1&pagesize=${wantedalbumsamount}&includeArtist=true&monitored=true&sortDir=desc&sortKey=releaseDate")
+	wantit=$(curl -s --header "X-Api-Key:"${LidarrApiKey} --request GET  "$LidarrUrl/api/v1/wanted/missing/?page=1&pagesize=${WantedAlbumsAmount}&includeArtist=true&monitored=true&sortDir=desc&sortKey=releaseDate")
 }
 GetTotalAlbumsLidarrReq(){
 	TotalLidAlbumsNames=$(echo "${wantit}"|jq -r '.records[].title' |wc -l  )
@@ -85,14 +85,14 @@ QueryAlbumURL(){
 DownloadURL(){
 	logit "Starting Download ... "
 	DLURL=${1}
-	timeout $Timeout ./SMLoadr-linux-x64 -q ${quality} -p "${downloadDir}" "${DLURL}"
+	timeout $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}" "${DLURL}"
 	logit "Download Complete"
 }
 
 CleanStart(){
 	if [ "${CleanStart}" = True ];then
-		logit "Removing previously downloaded files form smloadr downloads directory"
-		rm -rf ${downloadDir}/*
+		logit "Removing previously downloaded files from SMLoadr downloads directory".
+		rm -rf ${DownloadDir}/*
 	else
 		logit "Skipping CleanStart"
 	fi
@@ -100,37 +100,47 @@ CleanStart(){
 
 Cleanup(){
 	if [ "${KeepOnly}" = True ];then
-		if [ "${quality}" = FLAC ];then
+		if [ "${Quality}" = FLAC ];then
 			logit "Removing unwanted MP3's"
-			find ${downloadDir}/. -name "*.mp3" -type f -delete
+			find ${DownloadDir}/. -name "*.mp3" -type f -delete
 		else
 			logit "Removing unwanted FLAC's"
-			find ${downloadDir}/. -type f -name "*.flac" -type f -delete
+			find ${DownloadDir}/. -type f -name "*.flac" -type f -delete
 		fi
 	else
 		logit "Skipping KeepOnly Quality Cleanup"
 	fi
 	if [ "${CannotImport}" = True ];then
 		logit "Removing files that cannot be imported to Lidarr and empty folders"
-		find ${downloadDir}/. -type f -name "*.lrc" -type f -delete
-		find ${downloadDir}/. -type f -name "*.jpg" -type f -delete
-		find ${downloadDir}/ -empty -type d -delete
+		find ${DownloadDir}/. -type f -name "*.lrc" -type f -delete
+		find ${DownloadDir}/. -type f -name "*.jpg" -type f -delete
+		find ${DownloadDir}/ -empty -type d -delete
 	else
 		logit "Skipping Unwanted file removal"
 	fi
 }
 
+LidarrProcess(){
+	logit "Sending to Lidarr for post processing"
+	dlloc=($(find "${DownloadDir}" -maxdepth 1 -type d -not -path "${DownloadDir}"))
+	for d in "${dlloc[@]}"; do
+		if [ "${EnableWSLMode}" = True ];then
+			dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
+		else
+			dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
+		fi
+		LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
+	done
+	sleep 3s
+}
+
 ExternalProcess(){
-	if [ "${ExternalProcess}" = True ];then
-		dlloc=${downloadDir}/*
-		for d in $dlloc; do
-			logit "Moving Downloads"
-			mv "$d" ${externalprocessdirectory}
-		done
-		rm -rf ${downloadDir}/*
-	else
-			logit "Skipping External Processing"
-	fi
+	logit "Moving downloads for external post processing."
+	dlloc=${DownloadDir}/*
+	for d in $dlloc; do
+		mv "$d" ${ExternalProcessDirectory}
+	done
+	rm -rf ${DownloadDir}/*
 	sleep 3s
 }
 
@@ -139,28 +149,28 @@ ErrorExit(){
 	case ${2} in
 		2)	echo ${1};exit ${2};;
 		144)	echo ${1};exit ${2};;
-		*)	echo ${1} |tee -a ${scriptDir}/${logname};exit ${2};;
+		*)	echo ${1} |tee -a ${ScriptDir}/${LogName};exit ${2};;
 	esac
 }
 
 logit(){
-	echo ${1} | tee -a ${scriptDir}/${logname}
+	echo ${1} | tee -a ${ScriptDir}/${LogName}
 }
 
 skiplog(){
-	echo ${1} | tee -a ${scriptDir}/${skiplogname}
+	echo ${1} | tee -a ${ScriptDir}/${SkipLogName}
 }
 
 InitLogs(){
-	echo "Beginning Log" |tee ${scriptDir}/${logname} || ErrorExit "Cant create log file" 144
-	echo "LidArtistName;DeezerArtistID;DeezerArtistURL;LidAlbumName;DeezerDiscog" |tee ${scriptDir}/${skiplogname} || ErrorExit "Cant create skiplog file" 144
+	echo "Beginning Log" |tee ${ScriptDir}/${LogName} || ErrorExit "Cant create log file" 144
+	echo "LidArtistName;DeezerArtistID;DeezerArtistURL;LidAlbumName;DeezerDiscog" |tee ${ScriptDir}/${SkipLogName} || ErrorExit "Cant create skiplog file" 144
 }
 
 WantedModeBegin(){
 	AlbumsLidarrReq
 	GetTotalAlbumsLidarrReq
 	let loopindex=TotalLidAlbumsNames-1
-	[ ${loopindex} = "-1" ] && ErrorExit "Lidarr communication error, check lidarrUrl in config or lidarrApiKey"
+	[ ${loopindex} = "-1" ] && ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 	logit "Going to process and download ${TotalLidAlbumsNames} records"
 	for ((i=0;i<=(loopindex);i++)); do
 			logit ""
@@ -179,7 +189,7 @@ WantedModeBegin(){
 			logit "LidarrAlbumName: ${LidAlbumName}"
 			logit "ArtistID: ${DeezerArtistID}"
 		else
-			ErrorExit "Lidarr communication error, check lidarrUrl in config or lidarrApiKey"
+			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
 		echo "-Querying ${i} of ${loopindex}"
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${LidAlbumName}" ]; then
@@ -199,23 +209,12 @@ WantedModeBegin(){
 			continue
 		fi
 		Cleanup
-		if [ "${ExternalProcess}" = True ];then
+		if [ "${AppProcess}" = External ];then
 			ExternalProcess
+		elif [ "${AppProcess}" = Lidarr ];then
+			LidarrProcess
 		else
-			if [ "${EnableLidarrProcess}" = True ];then
-					logit "Sending to Lidarr for post Processing"
-					dlloc=($(find "${downloadDir}" -maxdepth 1 -type d -not -path "${downloadDir}"))
-					for d in "${dlloc[@]}"; do
-					if [ "${EnableWSLmode}" = True ];then
-						dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
-					else
-						dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
-					fi
-						LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
-					done
-			else
-				logit "Skipping Lidarr Processing"
-			fi
+			logit "Skipping Any Processing"
 		fi
 	done
 }
@@ -224,7 +223,7 @@ ArtistModeBegin(){
 	ArtistsLidarrReq
 	GetTotalArtistsLidarrReq
 	let loopindex=TotalLidArtistNames-1
-	[ ${loopindex} = "-1" ] && ErrorExit "Lidarr communication error, check lidarrUrl in config or lidarrApiKey"
+	[ ${loopindex} = "-1" ] && ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 	logit "Going to process and download ${TotalLidArtistNames} records"
 	for ((i=0;i<=(loopindex);i++)); do
 		logit ""
@@ -241,7 +240,7 @@ ArtistModeBegin(){
 			logit "LidarrAlbumName: ${LidAlbumName}"
 			logit "ArtistID: ${DeezerArtistID}"
 		else
-			ErrorExit "Lidarr communication error, check lidarrUrl in config or lidarrApiKey"
+			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
 		echo "-Querying ${i} of ${loopindex}"
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${DeezerArtistURL}" ]; then
@@ -257,33 +256,22 @@ ArtistModeBegin(){
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 			continue
 		fi
-	done
-	Cleanup
-	if [ "${ExternalProcess}" = True ];then
-		ExternalProcess
-	else
-		if [ "${EnableLidarrProcess}" = True ];then
-			logit "Sending to Lidarr for post Processing"
-			dlloc=($(find "${downloadDir}" -maxdepth 1 -type d -not -path "${downloadDir}"))
-			for d in "${dlloc[@]}"; do
-				if [ "${EnableWSLmode}" = True ];then
-					dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
-				else
-					dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
-				fi
-					LidarrProcessIt=$(curl -s "$lidarrUrl/api/v1/command" --header "X-Api-Key:"${lidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
-				done
+		Cleanup
+		if [ "${AppProcess}" = External ];then
+			ExternalProcess
+		elif [ "${AppProcess}" = Lidarr ];then
+			LidarrProcess
 		else
-				logit "Skipping Lidarr Processing"
+		logit "Skipping Any Processing"
 		fi
-	fi
+	done
 }
 
 CheckdlPath(){
-if [ -d ${downloadDir} ] && [ -w ${downloadDir} ]; then
-	dlcontento=($(find "${downloadDir}" -maxdepth 1 -type d -not -path "${downloadDir}"))
+if [ -d ${DownloadDir} ] && [ -w ${DownloadDir} ]; then
+	dlcontento=($(find "${DownloadDir}" -maxdepth 1 -type d -not -path "${DownloadDir}"))
 else
-	ErrorExit "download directory not writeable or doesnt exist ${downloadDir}"
+	ErrorExit "download directory not writeable or doesnt exist ${DownloadDir}"
 fi
 }
 
@@ -295,10 +283,10 @@ main(){
 	InitLogs
 	CleanStart
 	CheckdlPath
-	case "${mode}" in
+	case "${Mode}" in
 		wanted)	WantedModeBegin;;
 		artist) ArtistModeBegin;;
-		*) logit "mode error, check mode variable in config valid = wanted/artist" ;;
+		*) logit "Mode error, check Mode variable in config valid = wanted/artist" ;;
 	esac
 	IFS=$OLDIFS
 }
