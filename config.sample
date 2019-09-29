@@ -1,12 +1,12 @@
-##rename this file to "config" and enter in your parameters
+##rename this file to "config" (No file extension) and enter in your parameters
 
 #Directory that you want log files to be stored.
 scriptDir="/opt/smloadr/lidarr"
 #Directory that you want smloadr to download to.
 downloadDir="/mnt/unionfs/Media/Music/"
-#set to true if youre running lidarr on windows and this script on subsystem for linux
+#Set to true if you're running Lidarr on windows and this script on subsystem for Linux
 EnableWSLmode=False
-#Set domain or IP to your lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
+#Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
 lidarrUrl="http://192.168.1.x:8686"
 #Lidarr api key
 lidarrApiKey="08d108d108d108d108d108d108d108d1"
@@ -14,25 +14,27 @@ lidarrApiKey="08d108d108d108d108d108d108d108d1"
 quality="MP3_320"
 #Keeps only quality type selected above
 KeepOnly=False
-#logfilename
+#Log filename
 logname=smloadr-script.log
-#logs any info if an item was skipped
+#Logs any info if an item was skipped
 skiplogname=skipped.csv
-#set to True to delete files and empty folders that cannot be imported by Lidarr ".lrc" & ".jpg" files
+#Set to True to delete files and empty folders that cannot be imported by Lidarr ".lrc" & ".jpg" files
 CannotImport=False
-#When set to True, smloadr downloads directory contents is purged on initialization
+#When set to True, SMLoadr downloads directory contents is purged on initialization
 CleanStart=False
-#mode to choose what to passthrough to smloadr, "wanted" gets only the albums that are marked as monitored in lidarr, "artist" will just passthrough the artist. (wanted,artist) 
+#Mode to choose what to passthrough to SMLoadr, "wanted" gets only the albums that are marked as monitored in Lidarr, "artist" will just passthrough the artist. (wanted,artist)
 mode=wanted
 #When set to True, you will enable the downloaded files to be moved and picked up by other applications/scripts that you have setup. This replaces scripts Lidarr import process.
 ExternalProcess=False
 #Directory that you want to move downloaded files to for processing with other scripts or applications such as Beets
 externalprocessdirectory=/opt/beets/import
-#set to True to instruct Lidarr to process the download once smloadr finishes
+#Set to True to instruct Lidarr to process the download once SMLoadr finishes
 EnableLidarrProcess=True
+#Timeout for SMLoadr to stop it sticking on a single artist. Valid units of time are 's' for seconds, 'm' for minutes, 'h' for hours or 'd' for days.
+Timeout=5m
 
 #The below config is only used if mode = wanted
-#The amount of wanted albums to process it will grab the newest x amount of albums from the lidarr wanted list
+#The amount of wanted albums to process it will grab the newest x amount of albums from the Lidarr wanted list
 wantedalbumsamount=10
 #set to True to enable fuzzy album search if theres no exact match
 EnableFuzzyAlbumSearch=True

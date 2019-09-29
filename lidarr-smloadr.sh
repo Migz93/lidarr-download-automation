@@ -85,7 +85,7 @@ QueryAlbumURL(){
 DownloadURL(){
 	logit "Starting Download ... "
 	DLURL=${1}
-	./SMLoadr-linux-x64 -q ${quality} -p "${downloadDir}" "${DLURL}"
+	timeout $Timeout ./SMLoadr-linux-x64 -q ${quality} -p "${downloadDir}" "${DLURL}"
 	logit "Download Complete"
 }
 
@@ -187,7 +187,7 @@ WantedModeBegin(){
 			logit "DeezerAlbumName: ${DeezerDiscogAlbumName}"
 			logit "DeezerAlbumURL: ${DeezerAlbumURL}"
 		else
-			logit "Cant get artistname or artistid or albumname .. skipping" 
+			logit "Cant get artistname or artistid or albumname .. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 			continue
 		fi
