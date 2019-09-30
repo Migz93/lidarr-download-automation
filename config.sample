@@ -9,7 +9,7 @@ EnableWSLMode=False
 #Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
 LidarrUrl="http://192.168.1.x:8686"
 #Lidarr api key
-LidarrApikey="08d108d108d108d108d108d108d108d1"
+LidarrApiKey="08d108d108d108d108d108d108d108d1"
 #SMLoadr Download Quality setting (MP3_128,MP3_320,FLAC)
 Quality="MP3_320"
 #Keeps only quality type selected above
