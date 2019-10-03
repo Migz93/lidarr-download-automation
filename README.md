@@ -29,6 +29,8 @@ Edit the "config.sample" file, fill your paramaters and save as "config".<br>
 * **LidarrApikey** - 			Lidarr API key.<br>
 * **Quality** - 				SMLoadr Download Quality setting ('MP3_128', 'MP3_320' or 'FLAC').<br>
 * **KeepOnly** -					Keeps only the requested Download Quality. ('True' or 'False').<br>
+* **ClearSMloadrLog** - 			Set to "True" to enable duplicate downloading, set to "False" to prevent duplicate downloads between script runs ('True' or 'False').<br>
+* **PreviouslyDownloaded** - 			Checks SMLoadr log before downloading artist/albums to prevent downloading duplicates, if it exists in the SMLoadr "downloadedSuccessfully.txt" log. ('True' or 'False')<br>
 * **LogName** -					Log file name.<br>
 * **SkipLogName** -				Log file name to record if an item was skipped.<br>
 * **CannotImport** -				Removes files that cannot be imported by Lidarr automatically (.jpg, .lrc)('True' or 'False').<br>
@@ -41,10 +43,22 @@ Below are only used if "mode" is set to "wanted".<br>
 * **WantedAlbumsAmount** -		The amount of wanted albums to process it will grab the newest x amount of albums from the Lidarr wanted list.<br>
 * **EnableFuzzyAlbumSearch** -	Set to True to enable fuzzy album search if their is no exact match ('True' or 'False').<br>
 
+Below are only used if Post Processing Functions "Verification" or "ReplaygainTagging" are enabled.<br>
+* **Threads** -		Sets the maximum number of threads for multi-threaded operations, setting to "0" will use all available threads! Only for "Verification" and "ReplaygainTagging" operations (Set to number of threads)
+* **Verification** -		Checks FLAC files for errors, and deletes bad files. MP3 are scanned and fixed for errors in the headers ('True' or 'False').
+* **ReplaygainTagging** -		Adds Replaygain tags to FLAC files for audio player volume leveling ('True' or 'False').
+
 # Requirements
 * Lidarr installed & running.<br>
 * SMLoadr downloaded & in the same location as the script. I personally bundle them both in /opt/smloadr.<br>
 * jq installed (sudo apt-get install jq).<br>
+## For Post Processing Functions
+* find (linux cli app, typically installed by default)
+* xargs (linux cli app, typically installed by default)
+* grep (linux cli app, typically installed by default)
+* cat (linux cli app, typically installed by default)
+* flac (sudo apt-get -y install flac).<br>
+* mp3val (sudo apt-get -y install mp3val).<br>
 
 # Other
 Lidarr collects its information from https://musicbrainz.org which is open to anyone to edit, so if the Deezer ID in Lidarr is incorrect or missing you can sign up for an account and amend/add this yourself. This can take a few days to propagate to Lidarr.

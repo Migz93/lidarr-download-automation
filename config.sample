@@ -1,38 +1,35 @@
 ##rename this file to "config" (No file extension) and enter in your parameters
 
-#Directory that you want log files to be stored.
-ScriptDir="/opt/smloadr/lidarr"
-#Directory that you want smloadr to download to.
-DownloadDir="/mnt/unionfs/Media/Music/"
-#Set to true if you're running Lidarr on windows and this script on subsystem for Linux
-EnableWSLMode=False
-#Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
-LidarrUrl="http://192.168.1.x:8686"
-#Lidarr api key
-LidarrApiKey="08d108d108d108d108d108d108d108d1"
-#SMLoadr Download Quality setting (MP3_128,MP3_320,FLAC)
-Quality="MP3_320"
-#Keeps only quality type selected above
-KeepOnly=False
-#Log filename
-LogName=smloadr-script.log
-#Logs any info if an item was skipped
-SkipLogName=skipped.csv
-#Set to True to delete files and empty folders that cannot be imported by Lidarr ".lrc" & ".jpg" files
-CannotImport=False
-#When set to True, SMLoadr downloads directory contents is purged on initialization
-CleanStart=False
-#Mode to choose what to passthrough to SMLoadr, "wanted" gets only the albums that are marked as monitored in Lidarr, "artist" will just passthrough the artist. (wanted,artist)
-Mode=wanted
-#Specify which app to use for processing. ('Lidarr', 'External' or leave it empty for None).
-AppProcess=Lidarr
-#Directory that you want to move downloaded files to for processing with other scripts or applications such as Beets
-ExternalProcessDirectory=/opt/beets/import
-#Timeout for SMLoadr to stop it sticking on a single artist. Valid units of time are 's' for seconds, 'm' for minutes, 'h' for hours or 'd' for days.
-Timeout=5m
+#### PATH CONFIGURATIONS ###
+ScriptDir="/opt/smloadr/lidarr" # Directory that you want log files to be stored.
+DownloadDir="/mnt/unionfs/Media/Music/" # Directory that you want smloadr to download to.
+ExternalProcessDirectory="/opt/beets/import" # Directory that you want to move downloaded files to for processing with other scripts or applications such as Beets
+EnableWSLMode="False" # Set to "True" if you're running Lidarr on windows and this script on subsystem for Linux
 
-#The below config is only used if mode = wanted
-#The amount of wanted albums to process it will grab the newest x amount of albums from the Lidarr wanted list
-WantedAlbumsAmount=10
-#set to True to enable fuzzy album search if theirs is no exact match
-EnableFuzzyAlbumSearch=True
+### LIDARR SETTINGS ###
+LidarrUrl="http://127.0.0.1:8686" # Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
+LidarrApiKey="08d108d108d108d108d108d108d108d1" # Lidarr api key
+
+### SMLOADR SETTINGS ###
+Quality="MP3_320" # SMLoadr Download Quality setting (MP3_128,MP3_320,FLAC)
+KeepOnly="False" # Keeps only quality type selected above
+ClearSMloadrLog="False" # Set to "True" to enable duplicate downloading, set to "False" to prevent duplicate downloads between script runs
+PreviouslyDownloaded="True" # Checks SMLoadr log before downloading artist/albums to prevent downloading duplicates, if it exists in the SMLoadr "downloadedSuccessfully.txt" log.
+
+### DOWNLOAD POSTPROCESSING SETTINGS ###
+Threads="0" # Sets the maximum number of threads for multi-threaded operations, setting to "0" will use all available threads! Only for "Verification" and "ReplaygainTagging" operations
+Verification="False" # Checks FLAC files for errors, and deletes bad files. MP3 are scanned and fixed for errors in the headers (Requires flac and mp3val to be installed)
+ReplaygainTagging="False" # Adds Replaygain tags to FLAC files for audio player volume leveling (Requires flac to be installed)
+
+### SCRIPT SETTINGS ####
+LogName="smloadr-script.log" # Log filename
+SkipLogName="skipped.csv" # Logs any info if an item was skipped
+CannotImport="False" # Set to True to delete files and empty folders that cannot be imported by Lidarr ".lrc" & ".jpg" files
+CleanStart="False" # When set to True, SMLoadr downloads directory contents is purged on initialization
+AppProcess="Lidarr" # Specify which app to use for processing. ('Lidarr', 'External' or leave it empty for None).
+Timeout="5m" # Timeout for SMLoadr to stop it sticking on a single artist. Valid units of time are 's' for seconds, 'm' for minutes, 'h' for hours or 'd' for days.
+Mode="wanted" # Mode to choose what to passthrough to SMLoadr, "wanted" gets only the albums that are marked as monitored in Lidarr, "artist" will just passthrough the artist. (wanted,artist)
+
+##### The below config is only used if mode = wanted ######
+WantedAlbumsAmount="10" # The amount of wanted albums to process it will grab the newest x amount of albums from the Lidarr wanted list (maximum setting: 1000000000)
+EnableFuzzyAlbumSearch="True" # Set to "True" to enable fuzzy album search if theirs is no exact match
