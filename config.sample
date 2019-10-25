@@ -31,7 +31,7 @@ ClearDownloadLog="False" # True = ENABLED, Enables duplicate downloading, disabl
 PreviouslyDownloaded="True" # Checks Download log before downloading artist/albums to prevent downloading duplicates
 
 ############################## DOWNLOAD POSTPROCESSING CONFIGURATIONS ###############################
-Threads="0" # Sets the maximum number of threads for multi-threaded operations, setting to "0" will use all available threads!
+Threads="1" # Sets the maximum number of threads for multi-threaded operations, setting to "0" will use all available threads!
 Verification="False" # Checks FLAC files for errors, and deletes bad files. MP3 are scanned and fixed for errors in the headers (Requires flac and mp3val to be installed)
 ReplaygainTagging="False" # Adds Replaygain tags to FLAC files for audio player volume leveling (Requires flac to be installed)
 Convert="False" # True = ENABLED, Only converts lossless FLAC files to the requested "ConversionFormat" (see next setting)
