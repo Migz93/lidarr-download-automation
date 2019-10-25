@@ -116,14 +116,30 @@ DownloadURL(){
 		fi
 		chmod +x "d-fi" 2>/dev/null
 		./d-fi -q ${aquality} -p "${DownloadDir}/files/" "${DLURL}"
-		find "${DownloadDir}"/files/* -type d -not -name "*(WEB)-DFI" -exec mv "{}" "{} (WEB)-DFI" \; 2>/dev/null
+		move=($(find "${DownloadDir}"/files/* -type d -not -name "*(WEB)-DFI"))
+		for m in "${move[@]}"; do
+			if [[ ! -d "${m} (WEB)-DFI" ]]; then
+				mv "${m}" "${m} (WEB)-DFI"
+			else
+				logit "\"${m} (WEB)-DFI\" Already exists, removing duplicate"
+				rm -rf "${m}"
+			fi
+		done
 	else
 		chmod +x "SMLoadr-linux-x64" 2>/dev/null
      		timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}" && DownloadComplete="Yes"
 		if [ $? == "124" ]; then
 			logit "Download Timeout, retrying 1 more time..." && timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}"
 		fi
-		find "${DownloadDir}"/files/*/* -type d -not -name "*(WEB)-SMLOADR" -exec mv "{}" "{}-SMLOADR" \; 2>/dev/null
+		move=($(find "${DownloadDir}"/files/* -type d -not -name "*(WEB)-SMLOADR"))
+		for m in "${move[@]}"; do
+			if [[ ! -d "${m} (WEB)-SMLOADR" ]]; then
+				mv "${m}" "${m} (WEB)-SMLOADR"
+			else
+				logit "\"${m} (WEB)-SMLOADR\" Already exists, removing duplicate"
+				rm -rf "${m}"
+			fi
+		done
 	fi
 	logit "Download Complete"
 	echo "${DLURL}" >> "${LogDir}"/${DownloadLogName}
