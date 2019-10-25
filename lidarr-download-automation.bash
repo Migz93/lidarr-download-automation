@@ -241,9 +241,6 @@ Cleanup(){
 }
 
 LidarrProcess(){
-	if [ "${Convert}" = False ]; then
-		FileTypeExtension="flac"
-	fi
 	dlloc=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|mp3\|opus\|m4a\)" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
 	for d in "${dlloc[@]}"; do
 		if [ "${EnableWSLMode}" = True ];then
