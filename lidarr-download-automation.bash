@@ -118,13 +118,14 @@ DownloadURL(){
 		./d-fi -q ${aquality} -p "${DownloadDir}/files/" "${DLURL}"
 		find "${DownloadDir}"/files/* -type d -not -name "*(WEB)-DFI" -exec mv "{}" "{} (WEB)-DFI" \; 2>/dev/null
 	else
-        DLURL=${1}
 		chmod +x "SMLoadr-linux-x64" 2>/dev/null
-        timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}" && DownloadComplete="Yes"
-        if [ $? == "124" ]; then logit "Download Timeout, retrying 1 more time..." && timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}"; fi
+     		timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}" && DownloadComplete="Yes"
+		if [ $? == "124" ]; then
+			logit "Download Timeout, retrying 1 more time..." && timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}"
+		fi
 		find "${DownloadDir}"/files/*/* -type d -not -name "*(WEB)-SMLOADR" -exec mv "{}" "{}-SMLOADR" \; 2>/dev/null
 	fi
-    logit "Download Complete"
+	logit "Download Complete"
 	echo "${DLURL}" >> "${LogDir}"/${DownloadLogName}
 	Permissions "${DownloadDir}"
 }
@@ -194,7 +195,7 @@ Replaygain () {
 }
 
 DeleteDownloadLog () {
-	if [ "${ClearDownloadLog}" = True ];	then
+	if [ "${ClearDownloadLog}" = True ]; then
 		if [ -a "${LogDir}"/${DownloadLogName} ]; then
 			rm "${LogDir}"/${DownloadLogName}
 		else
@@ -349,27 +350,27 @@ WantedModeBegin(){
 					touch "${DownloadDir}/temp-hold"
 					sleep 1s
 					DownloadURL "${DeezerAlbumURL}"
-					if [ "${Verification}" = True ];then
+					if [ "${Verification}" = True ]; then
 						Verify
 					else
 						logit "Skipping File Verification"
 					fi
-					if [ "${Convert}" = True ];then
+					if [ "${Convert}" = True ]; then
 						Convert
 					else
 						logit "Skipping FLAC Conversion"
 					fi
-					if [ "${ReplaygainTagging}" = True ];then
+					if [ "${ReplaygainTagging}" = True ]; then
 						Replaygain
 					else
 						logit "Skipping Replaygain Tagging"
 					fi
 					Cleanup
-					if [ "${AppProcess}" = External ];then
+					if [ "${AppProcess}" = External ]; then
 						ExternalProcess
-					elif [ "${AppProcess}" = Lidarr ];then
+					elif [ "${AppProcess}" = Lidarr ]; then
 						LidarrProcess
-					elif [ "${AppProcess}" = AllDownloads ];then
+					elif [ "${AppProcess}" = AllDownloads ]; then
 						LidarrImport
 					else
 						logit "Skipping Any Processing"
@@ -420,26 +421,26 @@ ArtistModeBegin(){
 					DownloadURL "${DeezerArtistURL}"
 					logit "DeezerArtistURL: ${DeezerArtistURL}"
 					Cleanup
-					if [ "${Verification}" = True ];then
+					if [ "${Verification}" = True ]; then
 						Verify
 					else
 						logit "Skipping File Verification"
 					fi
-					if [ "${Convert}" = True ];then
+					if [ "${Convert}" = True ]; then
 						Convert
 					else
 						logit "Skipping FLAC Conversion"
 					fi
-					if [ "${ReplaygainTagging}" = True ];then
+					if [ "${ReplaygainTagging}" = True ]; then
 							Replaygain
 						else
 							logit "Skipping Replaygain Tagging"
 					fi
-					if [ "${AppProcess}" = External ];then
+					if [ "${AppProcess}" = External ]; then
 						ExternalProcess
-					elif [ "${AppProcess}" = Lidarr ];then
+					elif [ "${AppProcess}" = Lidarr ]; then
 						LidarrProcess
-					elif [ "${AppProcess}" = AllDownloads ];then
+					elif [ "${AppProcess}" = AllDownloads ]; then
 						LidarrImport
 					else
 						logit "Skipping Any Processing"
