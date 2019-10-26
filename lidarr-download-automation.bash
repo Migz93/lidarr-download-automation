@@ -174,6 +174,11 @@ Convert () {
 			find "${DownloadDir}/files/" -name "*.flac" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec flac \"@.temp.flac\" && echo \"CONVERSION SUCCESS: @.flac\" && rm \"@.flac\" && mv \"@.temp.flac\" \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "FLAC CONVERSION COMPLETE"
 			FileTypeExtension="flac"
 		fi
+		if [ "${ConversionFormat}" = ALAC ]; then
+			echo "ALAC CONVERSION START"
+			find "${DownloadDir}/files/" -name "*.flac" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec alac -movflags faststart \"@.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "ALAC CONVERSION COMPLETE"
+			FileTypeExtension="m4a"
+		fi
 	else
 		logit "FFMPEG not installed, please install ffmpeg to use this conversion feature"
 		FileTypeExtension="flac"
