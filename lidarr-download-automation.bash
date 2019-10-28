@@ -48,7 +48,7 @@ GetTotalAlbumsLidarrReq(){
 ProcessAlbumsLidarrReq(){
 	LidArtistName=$(echo "${wantit}" | jq -r .records[${i}].artist.sortName)
 	LidArtistDLName=$(echo "${wantit}" | jq -r .records[${i}].artist.artistName)
-	LidAlbumName=$(echo "${wantit}" | jq -r .records[${i}].title)
+	LidAlbumName=$(echo "${wantit}" | jq -r .records[${i}].title | iconv -f UTF-8 -t ASCII//TRANSLIT | tr '[:upper:]' '[:lower:]' | tr -cd '[:print:]' | tr -d '[:punct:]' | tr -s '[:space:]' )
 	LidArtistPath=$(echo "${wantit}" | jq -r .records[${i}].artist.path)
 	#M1 -- retrieve deezer artist id -- from lidarr
 	DeezerArtistURL=$(echo "${wantit}" | jq -r .records[${i}].artist.links[] |jq -r 'select(.name=="deezer")|.url');
@@ -69,7 +69,7 @@ QueryAlbumURL(){
 	mapfile -t DeezerDiscogArr <<< $(echo ${DeezerDiscog}|jq -c '.[][]?.title')
 	##match the wanted album title -- from deezer
 	for ((x=0;x<=DeezerDiscogTotal-1;x++)); do
-		DeezerDiscogAlbumName=$(echo "${DeezerDiscog}" |jq ".[]|.[$x]?"|jq -r .title )
+		DeezerDiscogAlbumName=$(echo "${DeezerDiscog}" |jq ".[]|.[$x]?"|jq -r .title | iconv -f UTF-8 -t ASCII//TRANSLIT | tr '[:upper:]' '[:lower:]' | tr -cd '[:print:]' | tr -d '[:punct:]' | tr -s '[:space:]' )
 		if [ "${LidAlbumName,,}" = "${DeezerDiscogAlbumName,,}" ];then
 			DeezerAlbumURL=$(echo "${DeezerDiscog}" |jq ".[]|.[$x]?"|jq -r .link )
 			break
