@@ -132,7 +132,7 @@ DownloadURL(){
 		if [ $? == "124" ]; then
 			logit "Download Timeout, retrying 1 more time..." && timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}"
 		fi
-		move=($(find "${DownloadDir}"/files/* -type d -not -name "*(WEB)-SMLOADR"))
+		move=($(find "${DownloadDir}"/files/*/* -type d -not -name "*(WEB)-SMLOADR"))
 		for m in "${move[@]}"; do
 			if [[ ! -d "${m} (WEB)-SMLOADR" ]]; then
 				mv "${m}" "${m} (WEB)-SMLOADR"
