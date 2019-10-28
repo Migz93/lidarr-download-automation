@@ -368,6 +368,7 @@ WantedModeBegin(){
 					touch "${DownloadDir}/temp-hold"
 					sleep 1s
 					DownloadURL "${DeezerAlbumURL}"
+					Cleanup
 					if [ "${Verification}" = True ]; then
 						Verify
 					else
@@ -383,7 +384,6 @@ WantedModeBegin(){
 					else
 						logit "Skipping Replaygain Tagging"
 					fi
-					Cleanup
 					if [ "${AppProcess}" = External ]; then
 						ExternalProcess
 					elif [ "${AppProcess}" = Lidarr ]; then
