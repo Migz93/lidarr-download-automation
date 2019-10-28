@@ -262,7 +262,7 @@ Cleanup(){
 }
 
 LidarrProcess(){
-	dlloc=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|mp3\|opus\|m4a\)" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
+	dlloc=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|mp3\|opus\|m4a\)" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
 	for d in "${dlloc[@]}"; do
 		if [ "${EnableWSLMode}" = True ];then
 			dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
