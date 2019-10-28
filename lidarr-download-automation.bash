@@ -135,7 +135,7 @@ DownloadURL(){
 		move=($(find "${DownloadDir}"/files/* -mindepth 1 -type d -not -name "*(WEB)-SMLOADR"))
 		for m in "${move[@]}"; do
 			if [[ ! -d "${m} (WEB)-SMLOADR" ]]; then
-				mv "${m}" "${m} (WEB)-SMLOADR"
+				mv "${m}" "$(dirname "${m}") - $(basename "${m}") (WEB)-SMLOADR"
 			else
 				logit "\"${m} (WEB)-SMLOADR\" Already exists, removing duplicate"
 				rm -rf "${m}"
