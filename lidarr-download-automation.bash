@@ -75,7 +75,7 @@ QueryAlbumURL(){
 			break
 		fi
 	done
-	if [ -z "${DeezerAlbumURL}" ] && [ "${EnableFuzzyAlbumSearch}" = True ];then
+	if [ -z "${DeezerAlbumURL}" ] && [ "${EnableFuzzyAlbumSearch}" = True ]; then
 		logit "Trying fuzzy search"
 		SanArtist="${LidArtistName// /%20}"
 		SanAlbum="${LidAlbumName// /%20}"
@@ -86,8 +86,9 @@ QueryAlbumURL(){
 		if [ -n "${DeezerAlbumID}" ];then
 			DeezerAlbumURL="https://www.deezer.com/album/${DeezerAlbumID}"
 			logit "Fuzzy search match ${DeezerAlbumURL}"
+		else
+			logit "Fuzzy search cant find a match"		
 		fi
-			logit "Fuzzy search cant find a match"
 	fi
 ##returns wanted album URL -- from deezer
 }
