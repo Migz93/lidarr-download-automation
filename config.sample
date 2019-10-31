@@ -2,6 +2,7 @@
 #####################################################################################################
 #                                  Lidarr Download Automation Script                                #
 #                                         (SMLoadr / d-fi)                                          #
+#                                    Credit: RandomNinjaAtk, Migz93                                 #
 #####################################################################################################
 #                                           Instructions                                            #
 #                                                                                                   #
@@ -11,48 +12,48 @@
 #     bash lidarr-download-automation.bash                                                          #
 #####################################################################################################
 
-######################################## PATH CONFIGURATIONS ########################################
-ScriptDir="/script/auto-downloader" # Directory where the script and executables are stored
-LogDir="/script/auto-downloader/logs" # Directory where the logs are stored
-DownloadDir="/script/auto-downloader/downloads" # The directory where files will be downloaded to before processing
-ExternalProcessDirectory="/script/auto-downloader/import" # Directory that you want to move downloaded files to for processing with other scripts or applications such as Beets
-EnableWSLMode="False" # Set to "True" if you're running Lidarr on windows and this script on subsystem for Linux
+######################################## PATHS CONFIGURATION ########################################
+ScriptDir="/script/lidarr-download-automation" # Directory where the script and executables are stored.
+LogDir="/script/lidarr-download-automation/logs" # Directory where the logs are stored.
+DownloadDir="/script/lidarr-download-automation/downloads" # The directory where files will be downloaded to before processing.
+ExternalProcessDirectory="/script/lidarr-download-automation/import" # Directory that you want to move downloaded files to for processing with other scripts or applications such as Beets.
+EnableWSLMode="False" # Set to "True" if you're running Lidarr on windows and this script on subsystem for Linux.
 
-####################################### LIDARR CONFIGURATIONS #######################################
+####################################### LIDARR CONFIGURATION #######################################
 LidarrUrl="http://127.0.0.1:8686" # Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
-LidarrApiKey="08d108d108d108d108d108d108d108d1" # Lidarr api key
+LidarrApiKey="08d108d108d108d108d108d108d108d1" # Lidarr API key.
 
-##################################### DOWNLOADER CONFIGURATIONS #####################################
-Quality="MP3_320" # SET TO: MP3_128 or MP3_320 or FLAC - Specifies the initial target download quality
-KeepOnly="False" # True = ENABLED, Keeps only quality type selected above
-DownloadLogName="download.log" # Log filename
-ClearDownloadLog="False" # True = ENABLED, Enables duplicate downloading, disabled prevents duplicate downloads between script runs
-PreviouslyDownloaded="True" # Checks Download log before downloading artist/albums to prevent downloading duplicates
+##################################### DOWNLOADER CONFIGURATION #####################################
+Quality="MP3_320" # SET TO: MP3_128 or MP3_320 or FLAC - Specifies the initial target download quality.
+KeepOnly="False" # True = ENABLED, Keeps only quality type selected above.
+DownloadLogName="download.log" # Log filename.
+ClearDownloadLog="False" # True = ENABLED, Enables duplicate downloading, disabled prevents duplicate downloads between script runs.
+PreviouslyDownloaded="True" # Checks Download log before downloading artist/albums to prevent downloading duplicates.
 
-############################## DOWNLOAD POSTPROCESSING CONFIGURATIONS ###############################
+############################## DOWNLOAD POSTPROCESSING CONFIGURATION ###############################
 Threads="1" # Sets the maximum number of threads for multi-threaded operations, setting to "0" will use all available threads!
-Verification="False" # Checks FLAC files for errors, and deletes bad files. MP3 are scanned and fixed for errors in the headers (Requires flac and mp3val to be installed)
-ReplaygainTagging="False" # Adds Replaygain tags to FLAC files for audio player volume leveling (Requires flac to be installed)
-Convert="False" # True = ENABLED, Only converts lossless FLAC files to the requested "ConversionFormat" (see next setting)
-ConversionFormat="MP3" # SET TO: OPUS or AAC or MP3 or FLAC or ALAC - converts lossless FLAC files to set format
-FolderPermissions="777" # SET to desired Linux folder permissions (chmod)
-FilePermissions="666" # SET to desired Linux file permissions (chmod) 
+Verification="False" # Checks FLAC files for errors, and deletes bad files. MP3 are scanned and fixed for errors in the headers. (Requires flac and mp3val to be installed)
+ReplaygainTagging="False" # Adds Replaygain tags to FLAC files for audio player volume leveling. (Requires flac to be installed)
+Convert="False" # True = ENABLED, Only converts lossless FLAC files to the requested "ConversionFormat". (See next setting)
+ConversionFormat="MP3" # SET TO: OPUS or AAC or MP3 or FLAC or ALAC - converts lossless FLAC files to set format.
+FolderPermissions="777" # SET to desired Linux folder permissions. (chmod)
+FilePermissions="666" # SET to desired Linux file permissions. (chmod) 
 
-####################################### SCRIPT CONFIGURATIONS #######################################
-LogName="script.log" # Log filename
-SkipLogName="skipped.csv" # Logs any info if an item was skipped
-CannotImport="False" # Set to True to delete files and empty folders that cannot be imported by "Lidarr" AppProcess  ".lrc" & ".jpg" files
-CleanStart="False" # When set to True, SMLoadr downloads directory contents is purged on initialization
+####################################### SCRIPT CONFIGURATION #######################################
+LogName="script.log" # Log filename.
+SkipLogName="skipped.csv" # Logs any info if an item was skipped.
+CannotImport="False" # Set to True to delete files and empty folders that cannot be imported by "Lidarr" AppProcess  ".lrc" & ".jpg" files.
+CleanStart="False" # When set to True, downloader downloads directory contents is purged on initialization.
 AppProcess="Lidarr" # Specify which app to use for processing. ('Lidarr', 'External', 'AllDownloads', "None')
-Timeout="5m" # Timeout for SMLoadr to stop it sticking on a single artist. Valid units of time are 's' for seconds, 'm' for minutes, 'h' for hours or 'd' for days.
-Mode="wanted" # Mode to choose what to passthrough to SMLoadr, "wanted" gets only the albums that are marked as monitored in Lidarr, "artist" will just passthrough the artist. (wanted,artist)
+Timeout="5m" # Timeout for downloader to stop it sticking on a single artist. Valid units of time are 's' for seconds, 'm' for minutes or 'h' for hours.
+Mode="wanted" # Mode to choose what to passthrough to downloader, "wanted" gets only the albums that are marked as monitored in Lidarr, "artist" will just passthrough the artist. (wanted,artist)
 
-#################################### "wanted" MODE CONFIGURATIONS ###################################
-WantedAlbumsAmount="50" # The amount of wanted albums to process it will grab the newest x amount of albums from the Lidarr wanted list (maximum setting: 1000000000)
-EnableFuzzyAlbumSearch="True" # Set to "True" to enable fuzzy album search if theirs is no exact match
+#################################### "wanted" MODE CONFIGURATION ###################################
+WantedAlbumsAmount="50" # The amount of wanted albums to process it will grab the newest x amount of albums from the Lidarr wanted list. (Maximum setting: 1000000000)
+EnableFuzzyAlbumSearch="True" # Set to "True" to enable fuzzy album search if no exact match found.
 
 ###################################### AppProcess DESCRIPTIONS ######################################
-# Lidarr = Send individual notificaitons to Lidarr to import albums, albums are scanned by Lidarr and if matched, imported
-# External = Moves downloaded files to a specified directory
-# AllDownloads = Moves all downloads into the corresponding Lidarr Artist folder and notifies Lidarr to rescan Artist directory (Recommended for "artist" mode and smloadr only)
-# None = No processing of completed downloads
+# Lidarr = Send individual notifications to Lidarr to import albums, albums are scanned by Lidarr and if matched, imported.
+# External = Moves downloaded files to a specified directory.
+# AllDownloads = Moves all downloads into the corresponding Lidarr Artist folder and notifies Lidarr to rescan Artist directory. (Recommended for "artist" mode)
+# None = No processing of completed downloads.
