@@ -75,7 +75,7 @@ QueryAlbumURL(){
 			break
 		fi
 	done
-	if [ -z "${DeezerAlbumURL}" ] && [ "${EnableFuzzyAlbumSearch}" = True ]; then
+	if [ -z "${DeezerAlbumURL}" ] && [ "${EnableFuzzyAlbumSearch}" = True ];then
 		logit "Trying fuzzy search"
 		SanArtist="${LidArtistName// /%20}"
 		SanAlbum="${LidAlbumName// /%20}"
@@ -87,7 +87,7 @@ QueryAlbumURL(){
 			DeezerAlbumURL="https://www.deezer.com/album/${DeezerAlbumID}"
 			logit "Fuzzy search match ${DeezerAlbumURL}"
 		else
-			logit "Fuzzy search cant find a match"		
+			logit "Fuzzy search cant find a match"
 		fi
 	fi
 ##returns wanted album URL -- from deezer
@@ -208,7 +208,7 @@ Verify () {
 
 Replaygain () {
 	logit "START REPLAYGAIN TAGGING"
-	if ! [ -x "$(command -v mp3val)" ]; then
+	if ! [ -x "$(command -v flac)" ]; then
 		logit "ERROR: METAFLAC replaygain utility not installed (ubuntu: apt-get install -y flac)"
 	else
 		find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sort -u | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "find \"@\" -name \"*.flac\" -exec metaflac --add-replay-gain \"{}\" + && echo \"TAGGED: @\""
@@ -270,11 +270,8 @@ LidarrProcess(){
 		else
 			dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
 		fi
-		if ! cat "${LogDir}/${SentToLidarrLogName}" | grep "${dwrap}" | read; then
-			logit "Sending ${dwrap} to Lidarr for post processing"
-			LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
-			echo ${dwrap} >> "${LogDir}/${SentToLidarrLogName}"
-		fi
+		logit "Sending ${dwrap} to Lidarr for post processing"
+		LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
 	done
 	sleep 3s
 }
@@ -507,15 +504,11 @@ main(){
 	CheckdlPath
 	DeleteDownloadLog
 	rm "${DownloadDir}/temp-hold" 2>/dev/null
-	rm "${LogDir}/${SentToLidarrLogName}" 2>/dev/null
-	logit "Creating ${LogDir}/${SentToLidarrLogName} to prevent duplicate Lidarr Notifications"
-	touch "${LogDir}/${SentToLidarrLogName}" && logit "${SentToLidarrLogName} created..."
 	case "${Mode}" in
 		wanted)	WantedModeBegin;;
 		artist) ArtistModeBegin;;
 		*) logit "Mode error, check Mode variable in config valid = wanted/artist" ;;
 	esac
-	rm "${LogDir}/${SentToLidarrLogName}" 2>/dev/null
 	IFS=$OLDIFS
 }
 
