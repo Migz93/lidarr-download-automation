@@ -21,7 +21,6 @@ EnableWSLMode="False" # Set to "True" if you're running Lidarr on windows and th
 ####################################### LIDARR CONFIGURATIONS #######################################
 LidarrUrl="http://127.0.0.1:8686" # Set domain or IP to your Lidarr instance including port. If using reverse proxy, do not use a trailing slash. Ensure you specify http/s.
 LidarrApiKey="08d108d108d108d108d108d108d108d1" # Lidarr api key
-SentToLidarrLogName="SentToLidarr.log" # Log filename
 
 ##################################### DOWNLOADER CONFIGURATIONS #####################################
 Quality="MP3_320" # SET TO: MP3_128 or MP3_320 or FLAC - Specifies the initial target download quality
