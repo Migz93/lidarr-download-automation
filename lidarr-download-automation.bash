@@ -170,7 +170,7 @@ Convert () {
 		fi
 		if [ "${ConversionFormat}" = AAC ]; then
 			echo "AAC CONVERSION START"
-			find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libfdk_aac -ab 320k -movflags faststart \"@.m4a\" && echo \"CONVERSION SUCCESS: @.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "AAC CONVERSION COMPLETE"	
+			find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec aac -ab 320k -movflags faststart \"@.m4a\" && echo \"CONVERSION SUCCESS: @.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "AAC CONVERSION COMPLETE"	
 			FileTypeExtension="m4a"
 		fi			
 		if [ "${ConversionFormat}" = MP3 ]; then
