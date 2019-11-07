@@ -102,10 +102,10 @@ DownloadURL(){
 		if [ ! -f d-fi ]; then
 			rm "d-fi.zip" 2>/dev/null
 			logit "downloading \"d-fi\"..."
-			curl -o d-fi.zip https://notabug.org/attachments/43e8fbbf-6b4e-4353-8890-97b9622ada8f
+			wget https://github.com/d-fi/releases/releases/latest/download/d-fi-linux-x64.zip
 			logit "download complete"
-			unzip "d-fi.zip" 2>/dev/null
-			rm "d-fi.zip"
+			unzip "d-fi-linux-x64.zip" 2>/dev/null
+			rm "d-fi-linux-x64.zip"
 		fi
 		if [ "${Quality}" = FLAC ]; then
 			aquality="FLAC"
@@ -117,7 +117,11 @@ DownloadURL(){
 			aquality="128"
 		fi
 		chmod +x "d-fi" 2>/dev/null
-		./d-fi -q ${aquality} -p "${DownloadDir}/files/" "${DLURL}"
+		timeout --foreground $Timeout ./d-fi -q ${aquality} -p "${DownloadDir}/files/" "${DLURL}" && DownloadComplete="Yes"
+		if [ $? == "124" ]; then
+			logit "Download Timeout, retrying 1 more time..." && timeout --foreground $Timeout ./d-fi -q ${aquality} -p "${DownloadDir}/files/" "${DLURL}"
+		fi
+		sleep 5s
 		move=($(find "${DownloadDir}"/files/* -type d -not -name "*(WEB)-DFI"))
 		for m in "${move[@]}"; do
 			if [[ ! -d "${m} (WEB)-DFI" ]]; then
@@ -133,13 +137,16 @@ DownloadURL(){
 		if [ $? == "124" ]; then
 			logit "Download Timeout, retrying 1 more time..." && timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}"
 		fi
+		sleep 5s
 		move=($(find "${DownloadDir}"/files/* -mindepth 1 -type d -not -name "*(WEB)-SMLOADR"))
 		for m in "${move[@]}"; do
 			if [[ ! -d "${m} (WEB)-SMLOADR" ]]; then
 				mv "${m}" "$(dirname "${m}") - $(basename "${m}") (WEB)-SMLOADR"
+				find "${DownloadDir}"/ -type d -empty -delete
 			else
 				logit "\"${m} (WEB)-SMLOADR\" Already exists, removing duplicate"
 				rm -rf "${m}"
+				find "${DownloadDir}"/ -type d -empty -delete
 			fi
 		done
 	fi
