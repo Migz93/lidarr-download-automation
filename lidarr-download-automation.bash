@@ -112,7 +112,7 @@ DownloadURL(){
 			sleep 10s
 		fi
 	done
-	move=($(find "${DownloadDir}"/* -type d -not -name "*(WEB)-DFI"))
+	move=($(find "${DownloadDir}"/* -type d -not -name "*(WEB)-DREMIX"))
 	for m in "${move[@]}"; do
 		if [[ ! -d "${m} (WEB)-DREMIX" ]]; then
 			mv "${m}" "${m} (WEB)-DREMIX"
