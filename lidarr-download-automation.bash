@@ -242,7 +242,7 @@ Cleanup(){
 }
 
 LidarrProcess(){
-    if [ "$(ls -A "$DownloadDir")" ]; then
+    if [ "$(ls -A "${DownloadDir}")" ]; then
         cleanmp3=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(mp3\)" -not -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
         for d in "${cleanmp3[@]}"; do
             if [ "${EnableWSLMode}" = True ];then
@@ -254,8 +254,8 @@ LidarrProcess(){
             LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
         done
     fi
-
-    if [ "$(ls -A "$DownloadDir")" ]; then
+    
+    if [ "$(ls -A "${DownloadDir}")" ]; then
         clean=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\)" -not -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
         for d in "${clean[@]}"; do
             if [ "${EnableWSLMode}" = True ];then
@@ -267,7 +267,7 @@ LidarrProcess(){
             LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
         done
     fi
-
+    
     if [ "$(ls -A "$DownloadDir")" ]; then
         dirtymp3=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(mp3\)" -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
         for d in "${clean[@]}"; do
@@ -280,8 +280,8 @@ LidarrProcess(){
             LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
         done
     fi
-
-    if [ "$(ls -A "$DownloadDir")" ]; then
+    
+    if [ "$(ls -A "${DownloadDir}")" ]; then
         dirty=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\)" -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
         for d in "${clean[@]}"; do
             if [ "${EnableWSLMode}" = True ];then
@@ -293,6 +293,7 @@ LidarrProcess(){
             LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
         done
     fi
+    
 }
 
 ExternalProcess(){
