@@ -97,59 +97,30 @@ QueryAlbumURL(){
 DownloadURL(){
 	DLURL=${1}
 	logit "Starting Download ... "
-	if [ ! -f SMLoadr-linux-x64 ]; then
-		logit "SMLoadr-Linux-x64 not found, using \"d-fi\""
-		if [ ! -f d-fi ]; then
-			rm "d-fi.zip" 2>/dev/null
-			logit "downloading \"d-fi\"..."
-			wget https://github.com/d-fi/releases/releases/latest/download/d-fi-linux-x64.zip
-			logit "download complete"
-			unzip "d-fi-linux-x64.zip" 2>/dev/null
-			rm "d-fi-linux-x64.zip"
+	curl -s --request GET  "http://${DeezloaderRemixUrl}:1730/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null
+	echo ""
+	echo "wait 30s and begin check for download completion..."
+	echo ""
+	check=1
+	sleep 30s
+	while [[ "$check" -le 1 ]]; do
+		if curl -s --request GET "http://${DeezloaderRemixUrl}:1730/api/queue/" | grep "length\":0,\"items\":\[\]" >/dev/null; then
+			check=2
+			echo "download complete... $URL"
+		else 
+			echo "still downloading... $URL"
+			sleep 10s
 		fi
-		if [ "${Quality}" = FLAC ]; then
-			aquality="FLAC"
+	done
+	move=($(find "${DownloadDir}"/* -type d -not -name "*(WEB)-DFI"))
+	for m in "${move[@]}"; do
+		if [[ ! -d "${m} (WEB)-DREMIX" ]]; then
+			mv "${m}" "${m} (WEB)-DREMIX"
+		else
+			logit "\"${m} (WEB)-DREMIX\" Already exists, removing duplicate"
+			rm -rf "${m}"
 		fi
-		if [ "${Quality}" = MP3_320 ]; then
-			aquality="320"
-		fi
-		if [ "${Quality}" = MP3_128 ]; then
-			aquality="128"
-		fi
-		chmod +x "d-fi" 2>/dev/null
-		timeout --foreground $Timeout ./d-fi -q ${aquality} -p "${DownloadDir}/files/" "${DLURL}" && DownloadComplete="Yes"
-		if [ $? == "124" ]; then
-			logit "Download Timeout, retrying 1 more time..." && timeout --foreground $Timeout ./d-fi -q ${aquality} -p "${DownloadDir}/files/" "${DLURL}"
-		fi
-		sleep 5s
-		move=($(find "${DownloadDir}"/files/* -type d -not -name "*(WEB)-DFI"))
-		for m in "${move[@]}"; do
-			if [[ ! -d "${m} (WEB)-DFI" ]]; then
-				mv "${m}" "${m} (WEB)-DFI"
-			else
-				logit "\"${m} (WEB)-DFI\" Already exists, removing duplicate"
-				rm -rf "${m}"
-			fi
-		done
-	else
-		chmod +x "SMLoadr-linux-x64" 2>/dev/null
-     		timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}" && DownloadComplete="Yes"
-		if [ $? == "124" ]; then
-			logit "Download Timeout, retrying 1 more time..." && timeout --foreground $Timeout ./SMLoadr-linux-x64 -q ${Quality} -p "${DownloadDir}/files/" "${DLURL}"
-		fi
-		sleep 5s
-		move=($(find "${DownloadDir}"/files/* -mindepth 1 -type d -not -name "*(WEB)-SMLOADR"))
-		for m in "${move[@]}"; do
-			if [[ ! -d "${m} (WEB)-SMLOADR" ]]; then
-				mv "${m}" "$(dirname "${m}") - $(basename "${m}") (WEB)-SMLOADR"
-				find "${DownloadDir}"/ -type d -empty -delete
-			else
-				logit "\"${m} (WEB)-SMLOADR\" Already exists, removing duplicate"
-				rm -rf "${m}"
-				find "${DownloadDir}"/ -type d -empty -delete
-			fi
-		done
-	fi
+	done
 	logit "Download Complete"
 	echo "${DLURL}" >> "${LogDir}"/${DownloadLogName}
 	Permissions "${DownloadDir}"
@@ -157,35 +128,35 @@ DownloadURL(){
 
 Permissions () {
 	logit "Setting Permissions"
-	find "${1}/files/" -type d -exec chmod ${FolderPermissions} {} \;
-	find "${1}/files/" -type f -exec chmod ${FilePermissions} {} \;
+	find "${1}/" -type d -exec chmod ${FolderPermissions} {} \;
+	find "${1}/" -type f -exec chmod ${FilePermissions} {} \;
 }
 
 Convert () {
 	if [ -x "$(command -v ffmpeg)" ]; then
 		if [ "${ConversionFormat}" = OPUS ]; then
 			echo "OPUS CONVERSION START"
-			find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libopus -ab 160k -application audio \"@.opus\" && echo \"CONVERSION SUCCESS: @.opus\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "OPUS CONVERSION COMPLETE"	
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libopus -ab 160k -application audio \"@.opus\" && echo \"CONVERSION SUCCESS: @.opus\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "OPUS CONVERSION COMPLETE"	
 			FileTypeExtension="opus"
 		fi
 		if [ "${ConversionFormat}" = AAC ]; then
 			echo "AAC CONVERSION START"
-			find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec aac -ab 320k -movflags faststart \"@.m4a\" && echo \"CONVERSION SUCCESS: @.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "AAC CONVERSION COMPLETE"	
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec aac -ab 320k -movflags faststart \"@.m4a\" && echo \"CONVERSION SUCCESS: @.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "AAC CONVERSION COMPLETE"	
 			FileTypeExtension="m4a"
 		fi			
 		if [ "${ConversionFormat}" = MP3 ]; then
 			echo "MP3 CONVERSION START"
-			find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libmp3lame -ab 320k \"@.mp3\" && echo \"CONVERSION SUCCESS: @.mp3\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "MP3 CONVERSION COMPLETE"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libmp3lame -ab 320k \"@.mp3\" && echo \"CONVERSION SUCCESS: @.mp3\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "MP3 CONVERSION COMPLETE"
 			FileTypeExtension="flac"
 		fi
 		if [ "${ConversionFormat}" = FLAC ]; then
 			echo "FLAC CONVERSION START"
-			find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec flac \"@.temp.flac\" && echo \"CONVERSION SUCCESS: @.flac\" && rm \"@.flac\" && mv \"@.temp.flac\" \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "FLAC CONVERSION COMPLETE"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec flac \"@.temp.flac\" && echo \"CONVERSION SUCCESS: @.flac\" && rm \"@.flac\" && mv \"@.temp.flac\" \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "FLAC CONVERSION COMPLETE"
 			FileTypeExtension="flac"
 		fi
 		if [ "${ConversionFormat}" = ALAC ]; then
 			echo "ALAC CONVERSION START"
-			find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec alac -movflags faststart \"@.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "ALAC CONVERSION COMPLETE"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec alac -movflags faststart \"@.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "ALAC CONVERSION COMPLETE"
 			FileTypeExtension="m4a"
 		fi
 	else
@@ -200,15 +171,15 @@ Verify () {
 	if ! [ -x "$(command -v flac)" ]; then
 		logit "ERROR: FLAC verification utility not installed (ubuntu: apt-get install -y flac)"
 	else
-		if find "${DownloadDir}/files/" -name "*.flac"  | read;	then
-			find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if flac -t --totally-silent \"@\"; then echo \"FLAC CHECK PASSED: @\"; else rm \"@\" && echo \"FAILED FLAC CHECK, FILE DELETED: @\"; fi;" && logit "FLAC FILES VERIFIED"
+		if find "${DownloadDir}/" -name "*.flac"  | read;	then
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if flac -t --totally-silent \"@\"; then echo \"FLAC CHECK PASSED: @\"; else rm \"@\" && echo \"FAILED FLAC CHECK, FILE DELETED: @\"; fi;" && logit "FLAC FILES VERIFIED"
 		fi
 	fi
 	if ! [ -x "$(command -v mp3val)" ]; then
 		logit "MP3VAL verification utility not installed (ubuntu: apt-get install -y mp3val)"
 	else
-		if find "${DownloadDir}/files/" -name "*.mp3"  | read; then
-			find "${DownloadDir}/files/" -name "*.mp3" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "mp3val -f -nb \"@\"" && logit "MP3 FILES VERIFIED"
+		if find "${DownloadDir}/" -name "*.mp3"  | read; then
+			find "${DownloadDir}/" -name "*.mp3" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "mp3val -f -nb \"@\"" && logit "MP3 FILES VERIFIED"
 		fi
 	fi
 	logit "VERIFICATION COMPLETE"
@@ -219,7 +190,7 @@ Replaygain () {
 	if ! [ -x "$(command -v flac)" ]; then
 		logit "ERROR: METAFLAC replaygain utility not installed (ubuntu: apt-get install -y flac)"
 	else
-		find "${DownloadDir}/files/" -name "*.flac" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sort -u | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "find \"@\" -name \"*.flac\" -exec metaflac --add-replay-gain \"{}\" + && echo \"TAGGED: @\""
+		find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sort -u | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "find \"@\" -name \"*.flac\" -exec metaflac --add-replay-gain \"{}\" + && echo \"TAGGED: @\""
 	fi
 	logit "REPLGAINGAIN TAGGING COMPLETE"
 }
@@ -242,7 +213,7 @@ DeleteDownloadLog () {
 CleanStart(){
 	if [ "${CleanStart}" = True ]; then
 		logit "Removing previously downloaded files from SMLoadr downloads directory".
-		rm -rf "${DownloadDir}"/files/*
+		rm -rf "${DownloadDir}"/*
 	else
 		logit "Skipping CleanStart"
 	fi
