@@ -97,14 +97,14 @@ QueryAlbumURL(){
 DownloadURL(){
 	DLURL=${1}
 	logit "Starting Download ... "
-	curl -s --request GET  "http://${DeezloaderRemixUrl}:1730/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null
+	curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null
 	echo ""
 	echo "wait 30s and begin check for download completion..."
 	echo ""
 	check=1
 	sleep 30s
 	while [[ "$check" -le 1 ]]; do
-		if curl -s --request GET "http://${DeezloaderRemixUrl}:1730/api/queue/" | grep "length\":0,\"items\":\[\]" >/dev/null; then
+		if curl -s --request GET "${DeezloaderRemixUrl}/api/queue/" | grep "length\":0,\"items\":\[\]" >/dev/null; then
 			check=2
 			echo "download complete... $URL"
 		else 
