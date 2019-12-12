@@ -242,17 +242,57 @@ Cleanup(){
 }
 
 LidarrProcess(){
-	dlloc=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|mp3\|opus\|m4a\)" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
-	for d in "${dlloc[@]}"; do
-		if [ "${EnableWSLMode}" = True ];then
-			dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
-		else
-			dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
-		fi
-		logit "Sending ${dwrap} to Lidarr for post processing"
-		LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
-	done
-	sleep 3s
+    if [ "$(ls -A "$DownloadDir")" ] then
+        cleanmp3=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(mp3\)" -not -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
+        for d in "${cleanmp3[@]}"; do
+            if [ "${EnableWSLMode}" = True ];then
+                dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
+            else
+                dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
+            fi
+            logit "Sending ${dwrap} to Lidarr for post processing"
+            LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
+        done
+    fi
+
+    if [ "$(ls -A "$DownloadDir")" ] then
+        clean=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\)" -not -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
+        for d in "${clean[@]}"; do
+            if [ "${EnableWSLMode}" = True ];then
+                dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
+            else
+                dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
+            fi
+            logit "Sending ${dwrap} to Lidarr for post processing"
+            LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
+        done
+    fi
+
+    if [ "$(ls -A "$DownloadDir")" ] then
+        dirtymp3=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(mp3\)" -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
+        for d in "${clean[@]}"; do
+            if [ "${EnableWSLMode}" = True ];then
+                dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
+            else
+                dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
+            fi
+            logit "Sending ${dwrap} to Lidarr for post processing"
+            LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
+        done
+    fi
+
+    if [ "$(ls -A "$DownloadDir")" ] then
+        dirty=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\)" -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
+        for d in "${clean[@]}"; do
+            if [ "${EnableWSLMode}" = True ];then
+                dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
+            else
+                dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
+            fi
+            logit "Sending ${dwrap} to Lidarr for post processing"
+            LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
+        done
+    fi
 }
 
 ExternalProcess(){
