@@ -24,7 +24,8 @@ LidarrUrl="http://127.0.0.1:8686" # Set domain or IP to your Lidarr instance inc
 LidarrApiKey="08d108d108d108d108d108d108d108d1" # Lidarr API key.
 
 ##################################### DOWNLOADER CONFIGURATION #####################################
-Quality="MP3_320" # SET TO: MP3_128 or MP3_320 or FLAC - Specifies the initial target download quality.
+DeezloaderRemixUrl="http://127.0.0.1:1730" # Set domain or IP to your Deezloader Remix instance including port.
+Quality="320" # SET TO: 128 or 320 or FLAC - Specifies the initial target download quality.
 KeepOnly="False" # True = ENABLED, Keeps only quality type selected above.
 DownloadLogName="download.log" # Log filename.
 ClearDownloadLog="False" # True = ENABLED, Enables duplicate downloading, disabled prevents duplicate downloads between script runs.
