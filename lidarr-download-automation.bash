@@ -270,7 +270,7 @@ LidarrProcess(){
     
     if [ "$(ls -A "$DownloadDir")" ]; then
         dirtymp3=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(mp3\)" -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
-        for d in "${clean[@]}"; do
+        for d in "${dirtymp3[@]}"; do
             if [ "${EnableWSLMode}" = True ];then
                 dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
             else
@@ -283,7 +283,7 @@ LidarrProcess(){
     
     if [ "$(ls -A "${DownloadDir}")" ]; then
         dirty=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\)" -name "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
-        for d in "${clean[@]}"; do
+        for d in "${dirty[@]}"; do
             if [ "${EnableWSLMode}" = True ];then
                 dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
             else
