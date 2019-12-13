@@ -113,10 +113,10 @@ DownloadURL(){
 					rm -rf "${m}"
 				fi
 			done
-			echo "${DLURL}" >> "${LogDir}"/${DownloadLogName}
+			logit "${DLURL}" >> "${LogDir}"/${DownloadLogName}
 			Permissions "${DownloadDir}"
 		else 
-			echo "still downloading... $URL"
+			logit "still downloading... $URL"
 			sleep 1s
 		fi
 	done
@@ -132,27 +132,27 @@ Convert () {
 	if [ -x "$(command -v ffmpeg)" ]; then
 		if [ "${ConversionFormat}" = OPUS ]; then
 			echo "OPUS CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libopus -ab 160k -application audio \"@.opus\" && echo \"CONVERSION SUCCESS: @.opus\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "OPUS CONVERSION COMPLETE"	
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libopus -ab 160k -application audio \"@.opus\" && logit \"CONVERSION SUCCESS: @.opus\" && rm \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "OPUS CONVERSION COMPLETE"	
 			FileTypeExtension="opus"
 		fi
 		if [ "${ConversionFormat}" = AAC ]; then
 			echo "AAC CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec aac -ab 320k -movflags faststart \"@.m4a\" && echo \"CONVERSION SUCCESS: @.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "AAC CONVERSION COMPLETE"	
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec aac -ab 320k -movflags faststart \"@.m4a\" && logit \"CONVERSION SUCCESS: @.m4a\" && rm \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "AAC CONVERSION COMPLETE"	
 			FileTypeExtension="m4a"
 		fi			
 		if [ "${ConversionFormat}" = MP3 ]; then
 			echo "MP3 CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libmp3lame -ab 320k \"@.mp3\" && echo \"CONVERSION SUCCESS: @.mp3\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "MP3 CONVERSION COMPLETE"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libmp3lame -ab 320k \"@.mp3\" && logit \"CONVERSION SUCCESS: @.mp3\" && rm \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "MP3 CONVERSION COMPLETE"
 			FileTypeExtension="flac"
 		fi
 		if [ "${ConversionFormat}" = FLAC ]; then
 			echo "FLAC CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec flac \"@.temp.flac\" && echo \"CONVERSION SUCCESS: @.flac\" && rm \"@.flac\" && mv \"@.temp.flac\" \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "FLAC CONVERSION COMPLETE"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec flac \"@.temp.flac\" && logit \"CONVERSION SUCCESS: @.flac\" && rm \"@.flac\" && mv \"@.temp.flac\" \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "FLAC CONVERSION COMPLETE"
 			FileTypeExtension="flac"
 		fi
 		if [ "${ConversionFormat}" = ALAC ]; then
 			echo "ALAC CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec alac -movflags faststart \"@.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && echo "ALAC CONVERSION COMPLETE"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec alac -movflags faststart \"@.m4a\" && rm \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "ALAC CONVERSION COMPLETE"
 			FileTypeExtension="m4a"
 		fi
 	else
@@ -168,7 +168,7 @@ Verify () {
 		logit "ERROR: FLAC verification utility not installed (ubuntu: apt-get install -y flac)"
 	else
 		if find "${DownloadDir}/" -name "*.flac"  | read;	then
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if flac -t --totally-silent \"@\"; then echo \"FLAC CHECK PASSED: @\"; else rm \"@\" && echo \"FAILED FLAC CHECK, FILE DELETED: @\"; fi;" && logit "FLAC FILES VERIFIED"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if flac -t --totally-silent \"@\"; then logit \"FLAC CHECK PASSED: @\"; else rm \"@\" && logit \"FAILED FLAC CHECK, FILE DELETED: @\"; fi;" && logit "FLAC FILES VERIFIED"
 		fi
 	fi
 	if ! [ -x "$(command -v mp3val)" ]; then
@@ -186,7 +186,7 @@ Replaygain () {
 	if ! [ -x "$(command -v flac)" ]; then
 		logit "ERROR: METAFLAC replaygain utility not installed (ubuntu: apt-get install -y flac)"
 	else
-		find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sort -u | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "find \"@\" -name \"*.flac\" -exec metaflac --add-replay-gain \"{}\" + && echo \"TAGGED: @\""
+		find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sort -u | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "find \"@\" -name \"*.flac\" -exec metaflac --add-replay-gain \"{}\" + && logit \"TAGGED: @\""
 	fi
 	logit "REPLGAINGAIN TAGGING COMPLETE"
 }
