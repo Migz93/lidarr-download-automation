@@ -460,33 +460,33 @@ ArtistModeBegin(){
 						DownloadURL "https://www.deezer.com/album/${album}" 
 						logit "DeezerArtistURL: ${DeezerArtistURL}"
 						Cleanup
-						if [ "${Verification}" = True ]; then
-							Verify
-						else
-							logit "Skipping File Verification"
-						fi
-						if [ "${Convert}" = True ]; then
-							Convert
-						else
-							logit "Skipping FLAC Conversion"
-						fi
-						if [ "${ReplaygainTagging}" = True ]; then
-								Replaygain
-							else
-								logit "Skipping Replaygain Tagging"
-						fi
-						if [ "${AppProcess}" = External ]; then
-							ExternalProcess
-						elif [ "${AppProcess}" = Lidarr ]; then
-							LidarrProcess
-						elif [ "${AppProcess}" = AllDownloads ]; then
-							LidarrImport
-						else
-							logit "Skipping Any Processing"
-						fi
-						rm "${DownloadDir}/temp-hold"
 				fi
 			done
+			if [ "${Verification}" = True ]; then
+				Verify
+			else
+				logit "Skipping File Verification"
+			fi
+			if [ "${Convert}" = True ]; then
+				Convert
+			else
+				logit "Skipping FLAC Conversion"
+			fi
+			if [ "${ReplaygainTagging}" = True ]; then
+				Replaygain
+			else
+				logit "Skipping Replaygain Tagging"
+			fi
+			if [ "${AppProcess}" = External ]; then
+				ExternalProcess
+			elif [ "${AppProcess}" = Lidarr ]; then
+				LidarrProcess
+			elif [ "${AppProcess}" = AllDownloads ]; then
+				LidarrImport
+			else
+				logit "Skipping Any Processing"
+			fi
+			rm "${DownloadDir}/temp-hold"
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
