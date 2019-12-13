@@ -446,43 +446,46 @@ ArtistModeBegin(){
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
-			if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "artist/${DeezerArtistID}" | read
-				then 
-					logit "Previously Downloaded, skipping..."
-					sleep 1s
-				else
-					rm "${DownloadDir}/temp-hold" 2>/dev/null
-					touch "${DownloadDir}/temp-hold"
-					sleep 1s
-					DownloadURL "${DeezerArtistURL}"
-					logit "DeezerArtistURL: ${DeezerArtistURL}"
-					Cleanup
-					if [ "${Verification}" = True ]; then
-						Verify
+			albumlist=($(curl -s --GET "${DeezerArtistURL}/albums&limit=1000" | jq -r ".data | .[]|.id" | uniq))
+			for album in "${albumlist[@]}"; do
+				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "$album" | read
+					then 
+						logit "Previously Downloaded, skipping..."
+						sleep 1s
 					else
-						logit "Skipping File Verification"
-					fi
-					if [ "${Convert}" = True ]; then
-						Convert
-					else
-						logit "Skipping FLAC Conversion"
-					fi
-					if [ "${ReplaygainTagging}" = True ]; then
-							Replaygain
+						rm "${DownloadDir}/temp-hold" 2>/dev/null
+						touch "${DownloadDir}/temp-hold"
+						sleep 1s
+						DownloadURL "https://www.deezer.com/album/$album"
+						logit "DeezerArtistURL: ${DeezerArtistURL}"
+						Cleanup
+						if [ "${Verification}" = True ]; then
+							Verify
 						else
-							logit "Skipping Replaygain Tagging"
-					fi
-					if [ "${AppProcess}" = External ]; then
-						ExternalProcess
-					elif [ "${AppProcess}" = Lidarr ]; then
-						LidarrProcess
-					elif [ "${AppProcess}" = AllDownloads ]; then
-						LidarrImport
-					else
-						logit "Skipping Any Processing"
-					fi
-					rm "${DownloadDir}/temp-hold"
-			fi
+							logit "Skipping File Verification"
+						fi
+						if [ "${Convert}" = True ]; then
+							Convert
+						else
+							logit "Skipping FLAC Conversion"
+						fi
+						if [ "${ReplaygainTagging}" = True ]; then
+								Replaygain
+							else
+								logit "Skipping Replaygain Tagging"
+						fi
+						if [ "${AppProcess}" = External ]; then
+							ExternalProcess
+						elif [ "${AppProcess}" = Lidarr ]; then
+							LidarrProcess
+						elif [ "${AppProcess}" = AllDownloads ]; then
+							LidarrImport
+						else
+							logit "Skipping Any Processing"
+						fi
+						rm "${DownloadDir}/temp-hold"
+				fi
+			done
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
