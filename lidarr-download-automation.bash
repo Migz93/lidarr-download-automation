@@ -208,7 +208,7 @@ DeleteDownloadLog () {
 
 CleanStart(){
 	if [ "${CleanStart}" = True ]; then
-		logit "Removing previously downloaded files from SMLoadr downloads directory".
+		logit "Removing previously downloaded files from downloads directory".
 		rm -rf "${DownloadDir}"/*
 	else
 		logit "Skipping CleanStart"
@@ -358,7 +358,7 @@ WantedModeBegin(){
 			DeezerDiscogAlbumName=""
 			DeezerAlbumURL=""
 			DeezerAlbumID=""
-		echo "-Processing ${i} of ${loopindex}"
+		logit "Processing ${i} of ${loopindex}"
 		if [ -n "${wantit}" ]; then
 			ProcessAlbumsLidarrReq
 			logit "ArtistName: ${LidArtistDLName}"
@@ -367,7 +367,7 @@ WantedModeBegin(){
 		else
 			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
-		echo "Querying ${i} of ${loopindex}"
+		logit "Querying ${i} of ${loopindex}"
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${LidAlbumName}" ]; then
 			QueryAlbumURL
 			logit "DeezerAlbumName: ${DeezerDiscogAlbumName}"
@@ -442,7 +442,7 @@ ArtistModeBegin(){
 		else
 			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
-		echo "-Querying ${i} of ${loopindex}"
+		logit "Querying ${i} of ${loopindex}"
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${DeezerArtistURL}" ]; then
 			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
 				logit "Cant get DeezerArtistURL or artistid.. skipping"
@@ -525,7 +525,7 @@ fi
 main(){
 	OLDIFS=$IFS
 	IFS=$'\n'
-	echo "Starting up"
+	logit "Starting up"
 	source ./config || ErrorExit "Configuration file not found" 2
 	CheckLogPath
 	InitLogs
