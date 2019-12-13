@@ -325,8 +325,8 @@ skiplog(){
 }
 
 InitLogs(){
-	echo "Beginning Log" |tee "${LogDir}"/${LogName} || ErrorExit "Cant create log file" 144
-	echo "LidArtistName;DeezerArtistID;DeezerArtistURL;LidAlbumName;DeezerDiscog" |tee "${LogDir}"/${SkipLogName} || ErrorExit "Cant create skiplog file" 144
+	logit "Beginning Log" |tee "${LogDir}"/${LogName} || ErrorExit "Cant create log file" 144
+	logit "LidArtistName;DeezerArtistID;DeezerArtistURL;LidAlbumName;DeezerDiscog" |tee "${LogDir}"/${SkipLogName} || ErrorExit "Cant create skiplog file" 144
 }
 
 WantedModeBegin(){
