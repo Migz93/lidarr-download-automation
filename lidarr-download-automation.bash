@@ -324,8 +324,13 @@ ErrorExit(){
 	esac
 }
 
+timestamp()
+{
+ date +"%Y-%m-%d %T"
+}
+
 logit(){
-	echo ${1} | tee -a "${LogDir}"/${LogName}
+	echo "[INFO:$(timestamp)] ${1}" | tee -a "${LogDir}"/${LogName}
 }
 
 skiplog(){
