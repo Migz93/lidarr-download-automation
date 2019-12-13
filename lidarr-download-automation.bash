@@ -98,32 +98,28 @@ DownloadURL(){
 	DLURL=${1}
 	logit "Starting Download ... "
 	curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null
-	echo ""
-	echo "wait 5s and begin check for download completion..."
-	echo ""
 	check=1
-	sleep 5s
+	sleep 1s
 	while [[ "$check" -le 1 ]]; do
 		if curl -s --request GET "${DeezloaderRemixUrl}/api/queue/" | grep "length\":0,\"items\":\[\]" >/dev/null; then
 			check=2
-			echo "download complete... $URL"
+			logit "Download Complete"
+			move=($(find "${DownloadDir}"/* -type d -not -name "*(WEB)-DREMIX"))
+			for m in "${move[@]}"; do
+				if [[ ! -d "${m} (WEB)-DREMIX" ]]; then
+					mv "${m}" "${m} (WEB)-DREMIX"
+				else
+					logit "\"${m} (WEB)-DREMIX\" Already exists, removing duplicate"
+					rm -rf "${m}"
+				fi
+			done
+			echo "${DLURL}" >> "${LogDir}"/${DownloadLogName}
+			Permissions "${DownloadDir}"
 		else 
 			echo "still downloading... $URL"
-			sleep 5s
+			sleep 1s
 		fi
 	done
-	move=($(find "${DownloadDir}"/* -type d -not -name "*(WEB)-DREMIX"))
-	for m in "${move[@]}"; do
-		if [[ ! -d "${m} (WEB)-DREMIX" ]]; then
-			mv "${m}" "${m} (WEB)-DREMIX"
-		else
-			logit "\"${m} (WEB)-DREMIX\" Already exists, removing duplicate"
-			rm -rf "${m}"
-		fi
-	done
-	logit "Download Complete"
-	echo "${DLURL}" >> "${LogDir}"/${DownloadLogName}
-	Permissions "${DownloadDir}"
 }
 
 Permissions () {
