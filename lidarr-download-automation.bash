@@ -388,29 +388,31 @@ WantedModeBegin(){
 					sleep 1s
 					DownloadURL "${DeezerAlbumURL}"
 					Cleanup
-					if [ "${Verification}" = True ]; then
-						Verify
-					else
-						logit "Skipping File Verification"
-					fi
-					if [ "${Convert}" = True ]; then
-						Convert
-					else
-						logit "Skipping FLAC Conversion"
-					fi
-					if [ "${ReplaygainTagging}" = True ]; then
-						Replaygain
-					else
-						logit "Skipping Replaygain Tagging"
-					fi
-					if [ "${AppProcess}" = External ]; then
-						ExternalProcess
-					elif [ "${AppProcess}" = Lidarr ]; then
-						LidarrProcess
-					elif [ "${AppProcess}" = AllDownloads ]; then
-						LidarrImport
-					else
-						logit "Skipping Any Processing"
+					if [ "$(ls -A "${DownloadDir}")" ]; then
+						if [ "${Verification}" = True ]; then
+							Verify
+						else
+							logit "Skipping File Verification"
+						fi
+						if [ "${Convert}" = True ]; then
+							Convert
+						else
+							logit "Skipping FLAC Conversion"
+						fi
+						if [ "${ReplaygainTagging}" = True ]; then
+							Replaygain
+						else
+							logit "Skipping Replaygain Tagging"
+						fi
+						if [ "${AppProcess}" = External ]; then
+							ExternalProcess
+						elif [ "${AppProcess}" = Lidarr ]; then
+							LidarrProcess
+						elif [ "${AppProcess}" = AllDownloads ]; then
+							LidarrImport
+						else
+							logit "Skipping Any Processing"
+						fi
 					fi
 					rm "${DownloadDir}/temp-hold"
 			fi
@@ -463,29 +465,31 @@ ArtistModeBegin(){
 						Cleanup
 				fi
 			done
-			if [ "${Verification}" = True ]; then
-				Verify
-			else
-				logit "Skipping File Verification"
-			fi
-			if [ "${Convert}" = True ]; then
-				Convert
-			else
-				logit "Skipping FLAC Conversion"
-			fi
-			if [ "${ReplaygainTagging}" = True ]; then
-				Replaygain
-			else
-				logit "Skipping Replaygain Tagging"
-			fi
-			if [ "${AppProcess}" = External ]; then
-				ExternalProcess
-			elif [ "${AppProcess}" = Lidarr ]; then
-				LidarrProcess
-			elif [ "${AppProcess}" = AllDownloads ]; then
-				LidarrImport
-			else
-				logit "Skipping Any Processing"
+			if [ "$(ls -A "${DownloadDir}")" ]; then
+				if [ "${Verification}" = True ]; then
+					Verify
+				else
+					logit "Skipping File Verification"
+				fi
+				if [ "${Convert}" = True ]; then
+					Convert
+				else
+					logit "Skipping FLAC Conversion"
+				fi
+				if [ "${ReplaygainTagging}" = True ]; then
+					Replaygain
+				else
+					logit "Skipping Replaygain Tagging"
+				fi
+				if [ "${AppProcess}" = External ]; then
+					ExternalProcess
+				elif [ "${AppProcess}" = Lidarr ]; then
+					LidarrProcess
+				elif [ "${AppProcess}" = AllDownloads ]; then
+					LidarrImport
+				else
+					logit "Skipping Any Processing"
+				fi
 			fi
 			rm "${DownloadDir}/temp-hold"
 		else
