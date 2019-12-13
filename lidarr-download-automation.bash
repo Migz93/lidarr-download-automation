@@ -446,9 +446,9 @@ ArtistModeBegin(){
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
-			albumlist=($(curl -s --GET "${DeezerArtistURL}/albums&limit=1000" | jq -r ".data | .[]|.id" | uniq))
+			albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]|.id" | uniq))
 			for album in "${albumlist[@]}"; do
-				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "$album" | read
+				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
 					then 
 						logit "Previously Downloaded, skipping..."
 						sleep 1s
@@ -456,7 +456,8 @@ ArtistModeBegin(){
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
 						sleep 1s
-						DownloadURL "https://www.deezer.com/album/$album"
+						logit "Downloading Album: ${album}"
+						DownloadURL "https://www.deezer.com/album/${album}" 
 						logit "DeezerArtistURL: ${DeezerArtistURL}"
 						Cleanup
 						if [ "${Verification}" = True ]; then
