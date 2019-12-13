@@ -333,7 +333,7 @@ logit(){
 }
 
 skiplog(){
-	echo ${1} | tee -a "${LogDir}"/${SkipLogName}
+	echo "[INFO:$(timestamp)] ${1}" | tee -a "${LogDir}"/${SkipLogName}
 }
 
 InitLogs(){
