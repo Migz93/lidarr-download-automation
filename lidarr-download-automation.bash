@@ -99,17 +99,17 @@ DownloadURL(){
 	logit "Starting Download ... "
 	curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null
 	echo ""
-	echo "wait 10s and begin check for download completion..."
+	echo "wait 5s and begin check for download completion..."
 	echo ""
 	check=1
-	sleep 10s
+	sleep 5s
 	while [[ "$check" -le 1 ]]; do
 		if curl -s --request GET "${DeezloaderRemixUrl}/api/queue/" | grep "length\":0,\"items\":\[\]" >/dev/null; then
 			check=2
 			echo "download complete... $URL"
 		else 
 			echo "still downloading... $URL"
-			sleep 10s
+			sleep 5s
 		fi
 	done
 	move=($(find "${DownloadDir}"/* -type d -not -name "*(WEB)-DREMIX"))
