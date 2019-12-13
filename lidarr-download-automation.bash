@@ -95,8 +95,7 @@ QueryAlbumURL(){
 }
 
 DownloadURL(){
-	DLURL=${1}
-	logit "Starting Download ... "
+	DLURL=${1}]
 	curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null
 	check=1
 	sleep 1s
@@ -338,8 +337,8 @@ skiplog(){
 }
 
 InitLogs(){
-	echo "Beginning Log" |tee "${LogDir}"/${LogName} || ErrorExit "Cant create log file" 144
-	echo "LidArtistName;DeezerArtistID;DeezerArtistURL;LidAlbumName;DeezerDiscog" |tee "${LogDir}"/${SkipLogName} || ErrorExit "Cant create skiplog file" 144
+	logit "Beginning Log" |tee "${LogDir}"/${LogName} || ErrorExit "Cant create log file" 144
+	logit "LidArtistName;DeezerArtistID;DeezerArtistURL;LidAlbumName;DeezerDiscog" |tee "${LogDir}"/${SkipLogName} || ErrorExit "Cant create skiplog file" 144
 }
 
 WantedModeBegin(){
@@ -387,8 +386,8 @@ WantedModeBegin(){
 					touch "${DownloadDir}/temp-hold"
 					sleep 1s
 					DownloadURL "${DeezerAlbumURL}"
-					Cleanup
 					if [ "$(ls -A "${DownloadDir}")" ]; then
+						Cleanup
 						if [ "${Verification}" = True ]; then
 							Verify
 						else
@@ -461,11 +460,10 @@ ArtistModeBegin(){
 						sleep 1s
 						logit "Downloading Album: ${album}"
 						DownloadURL "https://www.deezer.com/album/${album}" 
-						logit "DeezerArtistURL: ${DeezerArtistURL}"
-						Cleanup
 				fi
 			done
 			if [ "$(ls -A "${DownloadDir}")" ]; then
+				Cleanup
 				if [ "${Verification}" = True ]; then
 					Verify
 				else
