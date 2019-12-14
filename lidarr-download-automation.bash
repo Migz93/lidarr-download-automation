@@ -137,27 +137,23 @@ Convert () {
 	if [ -x "$(command -v ffmpeg)" ]; then
 		if [ "${ConversionFormat}" = OPUS ]; then
 			logit "OPUS CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libopus -ab 160k -application audio \"@.opus\" && logit \"CONVERSION SUCCESS: @.opus\" && rm \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "OPUS CONVERSION COMPLETE"	
-			FileTypeExtension="opus"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/.flac$//" -e "s/'/\\'/g" -e "s/\$/\\$/g" | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libopus -ab 160k -application audio \"@.opus\" && echo \"CONVERSION SUCCESS: @.opus\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && logit "OPUS CONVERSION COMPLETE"	
 		fi
 		if [ "${ConversionFormat}" = AAC ]; then
 			logit "AAC CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec aac -ab 320k -movflags faststart \"@.m4a\" && logit \"CONVERSION SUCCESS: @.m4a\" && rm \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "AAC CONVERSION COMPLETE"	
-			FileTypeExtension="m4a"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/.flac$//" -e "s/'/\\'/g" -e "s/\$/\\$/g" | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec aac -ab 320k -movflags faststart \"@.m4a\" && echo \"CONVERSION SUCCESS: @.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && logit "AAC CONVERSION COMPLETE"
 		fi			
 		if [ "${ConversionFormat}" = MP3 ]; then
 			logit "MP3 CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libmp3lame -ab 320k \"@.mp3\" && logit \"CONVERSION SUCCESS: @.mp3\" && rm \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "MP3 CONVERSION COMPLETE"
-			FileTypeExtension="flac"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/.flac$//" -e "s/'/\\'/g" -e "s/\$/\\$/g" | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libmp3lame -ab 320k \"@.mp3\" && echo \"CONVERSION SUCCESS: @.mp3\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && logit "MP3 CONVERSION COMPLETE"
 		fi
 		if [ "${ConversionFormat}" = FLAC ]; then
 			logit "FLAC CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec flac \"@.temp.flac\" && logit \"CONVERSION SUCCESS: @.flac\" && rm \"@.flac\" && mv \"@.temp.flac\" \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "FLAC CONVERSION COMPLETE"
-			FileTypeExtension="flac"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/.flac$//" -e "s/'/\\'/g" -e "s/\$/\\$/g" | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec flac \"@.temp.flac\" && echo \"CONVERSION SUCCESS: @.flac\" && rm \"@.flac\" && mv \"@.temp.flac\" \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && logit "FLAC CONVERSION COMPLETE"
 		fi
 		if [ "${ConversionFormat}" = ALAC ]; then
 			logit "ALAC CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec alac -movflags faststart \"@.m4a\" && rm \"@.flac\" && logit \"SOURCE FILE DELETED: @.flac\"" && logit "ALAC CONVERSION COMPLETE"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/.flac$//" -e "s/'/\\'/g" -e "s/\$/\\$/g" | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec alac -movflags faststart \"@.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && logit "ALAC CONVERSION COMPLETE"
 			FileTypeExtension="m4a"
 		fi
 	else
