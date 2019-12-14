@@ -407,7 +407,7 @@ ArtistModeBegin(){
 				continue
 			fi
 			logit "Downloading all explicit albums..."
-			explicitalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | uniq))
+			explicitalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id"))
 			for explicitalbum in "${explicitalbumlist[@]}"; do
 				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${explicitalbum}" | read
 					then 
@@ -448,7 +448,7 @@ ArtistModeBegin(){
 				rm "${DownloadDir}/temp-hold"
 			done
 			logit "Downloading all clean albums..."
-			cleanlbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | uniq))
+			cleanlbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id"))
 			for cleanalbum in "${cleanlbumlist[@]}"; do
 				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${cleanalbum}" | read
 					then 
