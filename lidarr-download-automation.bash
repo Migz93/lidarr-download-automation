@@ -238,8 +238,8 @@ Cleanup(){
 
 LidarrProcess(){
     if [ "$(ls -A "${DownloadDir}")" ]; then
-        cleanmp3=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(mp3\)" -not -iname "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
-        for d in "${cleanmp3[@]}"; do
+        import=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\|mp3\)" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
+        for d in "${import[@]}"; do
             if [ "${EnableWSLMode}" = True ];then
                 dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
             else
@@ -249,46 +249,6 @@ LidarrProcess(){
             LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
         done
     fi
-    
-    if [ "$(ls -A "${DownloadDir}")" ]; then
-        clean=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\)" -not -iname "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
-        for d in "${clean[@]}"; do
-            if [ "${EnableWSLMode}" = True ];then
-                dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
-            else
-                dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
-            fi
-            logit "Sending ${dwrap} to Lidarr for post processing"
-            LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
-        done
-    fi
-    
-    if [ "$(ls -A "$DownloadDir")" ]; then
-        dirtymp3=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(mp3\)" -iname "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
-        for d in "${dirtymp3[@]}"; do
-            if [ "${EnableWSLMode}" = True ];then
-                dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
-            else
-                dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
-            fi
-            logit "Sending ${dwrap} to Lidarr for post processing"
-            LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
-        done
-    fi
-    
-    if [ "$(ls -A "${DownloadDir}")" ]; then
-        dirty=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\)" -iname "*explicit*" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
-        for d in "${dirty[@]}"; do
-            if [ "${EnableWSLMode}" = True ];then
-                dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
-            else
-                dwrap=($( echo "${d}"|sed -e 's/^/\"/g' -e 's/$/\"/g'))
-            fi
-            logit "Sending ${dwrap} to Lidarr for post processing"
-            LidarrProcessIt=$(curl -s "$LidarrUrl/api/v1/command" --header "X-Api-Key:"${LidarrApiKey} --data '{"name":"DownloadedAlbumsScan", "path":'"${dwrap}"'}' );
-        done
-    fi
-    
 }
 
 ExternalProcess(){
@@ -448,8 +408,8 @@ ArtistModeBegin(){
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
-			albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]|.id" | uniq))
-			for album in "${albumlist[@]}"; do
+			explicitalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | uniq))
+			for explicitalbums in "${explicitalbumlist[@]}"; do
 				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
 					then 
 						logit "Previously Downloaded, skipping..."
@@ -458,38 +418,81 @@ ArtistModeBegin(){
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
 						sleep 1s
-						logit "Downloading Album: ${album}"
-						DownloadURL "https://www.deezer.com/album/${album}" 
+						logit "Downloading Album: ${explicitalbums}"
+						DownloadURL "https://www.deezer.com/album/${explicitalbums}" 
 				fi
+				if [ "$(ls -A "${DownloadDir}")" ]; then
+					Cleanup
+					if [ "${Verification}" = True ]; then
+						Verify
+					else
+						logit "Skipping File Verification"
+					fi
+					if [ "${Convert}" = True ]; then
+						Convert
+					else
+						logit "Skipping FLAC Conversion"
+					fi
+					if [ "${ReplaygainTagging}" = True ]; then
+						Replaygain
+					else
+						logit "Skipping Replaygain Tagging"
+					fi
+					if [ "${AppProcess}" = External ]; then
+						ExternalProcess
+					elif [ "${AppProcess}" = Lidarr ]; then
+						LidarrProcess
+					elif [ "${AppProcess}" = AllDownloads ]; then
+						LidarrImport
+					else
+						logit "Skipping Any Processing"
+					fi
+				fi
+				rm "${DownloadDir}/temp-hold"
 			done
-			if [ "$(ls -A "${DownloadDir}")" ]; then
-				Cleanup
-				if [ "${Verification}" = True ]; then
-					Verify
-				else
-					logit "Skipping File Verification"
+			
+			explicitalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | uniq))
+			for explicitalbums in "${explicitalbumlist[@]}"; do
+				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
+					then 
+						logit "Previously Downloaded, skipping..."
+						sleep 1s
+					else
+						rm "${DownloadDir}/temp-hold" 2>/dev/null
+						touch "${DownloadDir}/temp-hold"
+						sleep 1s
+						logit "Downloading Album: ${explicitalbums}"
+						DownloadURL "https://www.deezer.com/album/${explicitalbums}" 
 				fi
-				if [ "${Convert}" = True ]; then
-					Convert
-				else
-					logit "Skipping FLAC Conversion"
+				if [ "$(ls -A "${DownloadDir}")" ]; then
+					Cleanup
+					if [ "${Verification}" = True ]; then
+						Verify
+					else
+						logit "Skipping File Verification"
+					fi
+					if [ "${Convert}" = True ]; then
+						Convert
+					else
+						logit "Skipping FLAC Conversion"
+					fi
+					if [ "${ReplaygainTagging}" = True ]; then
+						Replaygain
+					else
+						logit "Skipping Replaygain Tagging"
+					fi
+					if [ "${AppProcess}" = External ]; then
+						ExternalProcess
+					elif [ "${AppProcess}" = Lidarr ]; then
+						LidarrProcess
+					elif [ "${AppProcess}" = AllDownloads ]; then
+						LidarrImport
+					else
+						logit "Skipping Any Processing"
+					fi
 				fi
-				if [ "${ReplaygainTagging}" = True ]; then
-					Replaygain
-				else
-					logit "Skipping Replaygain Tagging"
-				fi
-				if [ "${AppProcess}" = External ]; then
-					ExternalProcess
-				elif [ "${AppProcess}" = Lidarr ]; then
-					LidarrProcess
-				elif [ "${AppProcess}" = AllDownloads ]; then
-					LidarrImport
-				else
-					logit "Skipping Any Processing"
-				fi
-			fi
-			rm "${DownloadDir}/temp-hold"
+				rm "${DownloadDir}/temp-hold"
+			done
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
