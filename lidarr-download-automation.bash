@@ -393,7 +393,7 @@ ArtistModeBegin(){
 		logit ""
 		DeezerArtistID=""
 		DeezerArtistURL=""
-		echo "Processing ${i} of ${loopindex}"
+		logit "Processing ${i} of ${loopindex}"
 		if [ -n "${wantit}" ]; then
 			ProcessArtistsLidarrReq
 			logit "ArtistName: ${LidArtistNameCap}"
