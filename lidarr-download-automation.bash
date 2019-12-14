@@ -406,16 +406,17 @@ ArtistModeBegin(){
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
+			logit "Downloading all explicit albums..."
 			explicitalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | uniq))
-			for explicitalbums in "${explicitalbumlist[@]}"; do
-				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
+			for explicitalbum in "${explicitalbumlist[@]}"; do
+				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${explicitalbum}" | read
 					then 
 						logit "Previously Downloaded, skipping..."
 					else
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
-						logit "Downloading Album: ${explicitalbums}"
-						DownloadURL "https://www.deezer.com/album/${explicitalbums}" 
+						logit "Downloading Album: ${explicitalbum}"
+						DownloadURL "https://www.deezer.com/album/${explicitalbum}" 
 				fi
 				if [ "$(ls -A "${DownloadDir}")" ]; then
 					Cleanup
@@ -446,17 +447,17 @@ ArtistModeBegin(){
 				fi
 				rm "${DownloadDir}/temp-hold"
 			done
-			
-			explicitalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | uniq))
-			for explicitalbums in "${explicitalbumlist[@]}"; do
-				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
+			logit "Downloading all clean albums..."
+			cleanlbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" |  | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | uniq))
+			for cleanalbum in "${cleanlbumlist[@]}"; do
+				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${cleanalbum}" | read
 					then 
 						logit "Previously Downloaded, skipping..."
 					else
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
-						logit "Downloading Album: ${explicitalbums}"
-						DownloadURL "https://www.deezer.com/album/${explicitalbums}" 
+						logit "Downloading Album: ${cleanalbum}"
+						DownloadURL "https://www.deezer.com/album/${cleanalbum}" 
 				fi
 				if [ "$(ls -A "${DownloadDir}")" ]; then
 					Cleanup
