@@ -394,12 +394,12 @@ ArtistModeBegin(){
 		logit "Processing ${i} of ${loopindex}"
 		if [ -n "${wantit}" ]; then
 			ProcessArtistsLidarrReq
+			logit "Querying ${i} of ${loopindex}"
 			logit "ArtistName: ${LidArtistNameCap}"
 			logit "ArtistID: ${DeezerArtistID}"
 		else
 			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
-		logit "Querying ${i} of ${loopindex}"
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${DeezerArtistURL}" ]; then
 			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
 				logit "Cant get DeezerArtistURL or artistid.. skipping"
