@@ -97,7 +97,7 @@ QueryAlbumURL(){
 DownloadURL(){
 	DLURL=${1}
 	check=1
-	if curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}"; then
+	if curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null; then
 		logit "Sent ${DLURL} for download via Deezloader Remix"
 		sleep 3s
 		while [[ "$check" -le 1 ]]; do
