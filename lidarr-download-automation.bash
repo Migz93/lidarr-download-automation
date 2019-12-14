@@ -95,30 +95,36 @@ QueryAlbumURL(){
 }
 
 DownloadURL(){
-	DLURL=${1}]
-	curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null
+	DLURL=${1}
 	check=1
-	sleep 3s
-	while [[ "$check" -le 1 ]]; do
-		if curl -s --request GET "${DeezloaderRemixUrl}/api/queue/" | grep "length\":0,\"items\":\[\]" >/dev/null; then
-			check=2
-			logit "Download Complete"
-			move=($(find "${DownloadDir}"/* -type d -not -name "*(WEB)-DREMIX"))
-			for m in "${move[@]}"; do
-				if [[ ! -d "${m} (WEB)-DREMIX" ]]; then
-					mv "${m}" "${m} (WEB)-DREMIX"
-				else
-					logit "\"${m} (WEB)-DREMIX\" Already exists, removing duplicate"
-					rm -rf "${m}"
-				fi
-			done
-			logit "${DLURL}" >> "${LogDir}"/${DownloadLogName}
-			Permissions "${DownloadDir}"
-		else 
-			logit "still downloading... $URL"
-			sleep 2s
-		fi
-	done
+	if curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}"; then
+		logit "Sent ${DLURL} for download via Deezloader Remix"
+		sleep 3s
+		while [[ "$check" -le 1 ]]; do
+			if curl -s --request GET "${DeezloaderRemixUrl}/api/queue/" | grep "length\":0,\"items\":\[\]" >/dev/null; then
+				check=2
+				logit "Download Complete"
+				move=($(find "${DownloadDir}"/* -type d -not -name "*(WEB)-DREMIX"))
+				for m in "${move[@]}"; do
+					if [[ ! -d "${m} (WEB)-DREMIX" ]]; then
+						mv "${m}" "${m} (WEB)-DREMIX"
+					else
+						logit "\"${m} (WEB)-DREMIX\" Already exists, removing duplicate"
+						rm -rf "${m}"
+					fi
+				done
+				logit "${DLURL}" >> "${LogDir}"/${DownloadLogName}
+				Permissions "${DownloadDir}"
+			else 
+				logit "still downloading... $URL"
+				sleep 2s
+			fi
+		done
+
+	
+	else
+	    logit "Deezloader-Remix Download Error"
+	fi
 }
 
 Permissions () {
