@@ -339,7 +339,7 @@ WantedModeBegin(){
 		if [ -n "${DeezerAlbumURL}" ]; then
 			if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${DeezerAlbumURL}" | read
 				then 
-					logit "Previously Downloaded, skipping..."
+					logit "Previously Downloaded: ${DeezerAlbumURL}, skipping..."
 				else
 					rm "${DownloadDir}/temp-hold" 2>/dev/null
 					touch "${DownloadDir}/temp-hold"
@@ -411,7 +411,7 @@ ArtistModeBegin(){
 			for explicitalbum in "${explicitalbumlist[@]}"; do
 				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${explicitalbum}" | read
 					then 
-						logit "Previously Downloaded, skipping..."
+						logit "Previously Downloaded: ${explicitalbum}, skipping..."
 					else
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
@@ -452,7 +452,7 @@ ArtistModeBegin(){
 			for cleanalbum in "${cleanlbumlist[@]}"; do
 				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${cleanalbum}" | read
 					then 
-						logit "Previously Downloaded, skipping..."
+						logit "Previously Downloaded: ${cleanalbum}, skipping..."
 					else
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
