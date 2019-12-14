@@ -154,11 +154,9 @@ Convert () {
 		if [ "${ConversionFormat}" = ALAC ]; then
 			logit "ALAC CONVERSION START"
 			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/.flac$//" -e "s/'/\\'/g" -e "s/\$/\\$/g" | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec alac -movflags faststart \"@.m4a\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && logit "ALAC CONVERSION COMPLETE"
-			FileTypeExtension="m4a"
 		fi
 	else
 		logit "FFMPEG not installed, please install ffmpeg to use this conversion feature"
-		FileTypeExtension="flac"
 		sleep 5s
 	fi
 }
@@ -169,7 +167,7 @@ Verify () {
 		logit "ERROR: FLAC verification utility not installed (ubuntu: apt-get install -y flac)"
 	else
 		if find "${DownloadDir}/" -name "*.flac"  | read;	then
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if flac -t --totally-silent \"@\"; then logit \"FLAC CHECK PASSED: @\"; else rm \"@\" && logit \"FAILED FLAC CHECK, FILE DELETED: @\"; fi;" && logit "FLAC FILES VERIFIED"
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if flac -t --totally-silent \"@\"; then echo \"FLAC CHECK PASSED: @\"; else rm \"@\" && echo \"FAILED FLAC CHECK, FILE DELETED: @\"; fi;" && logit "FLAC FILES VERIFIED"
 		fi
 	fi
 	if ! [ -x "$(command -v mp3val)" ]; then
