@@ -98,7 +98,7 @@ DownloadURL(){
 	DLURL=${1}]
 	curl -s --request GET  "${DeezloaderRemixUrl}/api/download/?url=${DLURL}&quality=${Quality}" >/dev/null
 	check=1
-	sleep 1s
+	sleep 3s
 	while [[ "$check" -le 1 ]]; do
 		if curl -s --request GET "${DeezloaderRemixUrl}/api/queue/" | grep "length\":0,\"items\":\[\]" >/dev/null; then
 			check=2
@@ -116,7 +116,7 @@ DownloadURL(){
 			Permissions "${DownloadDir}"
 		else 
 			logit "still downloading... $URL"
-			sleep 1s
+			sleep 2s
 		fi
 	done
 }
@@ -340,11 +340,9 @@ WantedModeBegin(){
 			if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${DeezerAlbumURL}" | read
 				then 
 					logit "Previously Downloaded, skipping..."
-					sleep 1s
 				else
 					rm "${DownloadDir}/temp-hold" 2>/dev/null
 					touch "${DownloadDir}/temp-hold"
-					sleep 1s
 					DownloadURL "${DeezerAlbumURL}"
 					if [ "$(ls -A "${DownloadDir}")" ]; then
 						Cleanup
@@ -413,11 +411,9 @@ ArtistModeBegin(){
 				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
 					then 
 						logit "Previously Downloaded, skipping..."
-						sleep 1s
 					else
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
-						sleep 1s
 						logit "Downloading Album: ${explicitalbums}"
 						DownloadURL "https://www.deezer.com/album/${explicitalbums}" 
 				fi
@@ -456,11 +452,9 @@ ArtistModeBegin(){
 				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
 					then 
 						logit "Previously Downloaded, skipping..."
-						sleep 1s
 					else
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
-						sleep 1s
 						logit "Downloading Album: ${explicitalbums}"
 						DownloadURL "https://www.deezer.com/album/${explicitalbums}" 
 				fi
