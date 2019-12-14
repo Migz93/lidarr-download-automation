@@ -185,7 +185,7 @@ Replaygain () {
 	if ! [ -x "$(command -v flac)" ]; then
 		logit "ERROR: METAFLAC replaygain utility not installed (ubuntu: apt-get install -y flac)"
 	else
-		find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sort -u | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "find \"@\" -name \"*.flac\" -exec metaflac --add-replay-gain \"{}\" + && logit \"TAGGED: @\""
+		find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sort -u | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "find \"@\" -name \"*.flac\" -exec metaflac --add-replay-gain \"{}\" + && echo \"TAGGED: @\""
 	fi
 	logit "REPLGAINGAIN TAGGING COMPLETE"
 }
