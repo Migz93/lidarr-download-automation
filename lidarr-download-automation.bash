@@ -444,8 +444,8 @@ ArtistModeBegin(){
 					else
 						logit "Skipping Any Processing"
 					fi
-				fi
 				rm "${DownloadDir}/temp-hold"
+				fi
 			done
 			logit "Downloading all clean albums..."
 			cleanlbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | sort -u))
@@ -485,8 +485,8 @@ ArtistModeBegin(){
 					else
 						logit "Skipping Any Processing"
 					fi
-				fi
 				rm "${DownloadDir}/temp-hold"
+				fi
 			done
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
