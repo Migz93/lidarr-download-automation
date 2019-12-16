@@ -239,7 +239,7 @@ Cleanup(){
 LidarrProcess(){
     #INSERT
     if [ "$(ls -A "${DownloadDir}")" ]; then
-        import=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\|mp3\)" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
+        import=($(find "${DownloadDir}" -type f -iregex ".*/.*\.\(flac\|opus\|m4a\|mp3\)" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | sort -u))
         for d in "${import[@]}"; do
             if [ "${EnableWSLMode}" = True ];then
                 dwrap=($( echo "${d}"|sed -e 's/mnt\///' -e 's/^\///' -e 's/^./\0:/' -e 's/\//\\\\/g' -e 's/^/\"/g' -e 's/$/\"/g'))
