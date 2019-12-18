@@ -1,7 +1,7 @@
 #!/bin/bash
 #####################################################################################################
 #                                  Lidarr Download Automation Script                                #
-#                                         (SMLoadr / d-fi)                                          #
+#                                          (Deezloader Remix)                                       #
 #                                    Credit: RandomNinjaAtk, Migz93                                 #
 #####################################################################################################
 #                                           Script Start                                            #
@@ -273,7 +273,6 @@ LidarrImport () {
 	Permissions "${LidArtistPath}"
 	LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
 	logit "Notified Lidarr to scan ${LidArtistNameCap}"
-	rm -rf "${DownloadDir}"/*
 }
 
 ErrorExit(){
