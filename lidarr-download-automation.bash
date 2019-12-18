@@ -268,7 +268,7 @@ LidarrImport () {
 		mkdir "${LidArtistPath}"
 		chmod ${FolderPermissions} "${LidArtistPath}"
 	fi
-	find "${DownloadDir}" -type d -iname "*${LidArtistName}* - *" | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "mv \"@\" \"${LidArtistPath}/\" 2>/dev/null"
+	find "${DownloadDir}" -type d -iname "*${LidArtistName}* - *" | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "mv \"@\" \"${LidArtistPath}/\" 2>/dev/null"
 	logit "Moved to Lidarr"
 	Permissions "${LidArtistPath}"
 	LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
