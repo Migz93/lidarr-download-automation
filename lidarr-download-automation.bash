@@ -373,6 +373,9 @@ WantedModeBegin(){
 					fi
 					rm "${DownloadDir}/temp-hold"
 			fi
+			if [ "${AppProcess}" = AllDownloads ]; then
+				LidarrImport
+			fi
 		else
 			logit "Cant match the wanted album to an album on deezer .. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName};${DeezerDiscogArr[*]}"
@@ -489,7 +492,11 @@ ArtistModeBegin(){
 						rm "${DownloadDir}/temp-hold"
 						fi
 				fi
+					
 			done
+			if [ "${AppProcess}" = AllDownloads ]; then
+				LidarrImport
+			fi
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
