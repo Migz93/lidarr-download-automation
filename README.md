@@ -7,8 +7,6 @@ This script runs externally to Lidarr and isn't added anywhere to Lidarr, instea
 
 Please check the wiki for more information.
 
-# Demo
-![Demo](https://s4.gifyu.com/images/demo.gif)
 
 # Credit
 Original Script: Myself<br>
