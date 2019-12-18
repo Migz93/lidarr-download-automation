@@ -46,7 +46,6 @@ SkipLogName="skipped.csv" # Logs any info if an item was skipped.
 CannotImport="False" # Set to True to delete files and empty folders that cannot be imported by "Lidarr" AppProcess  ".lrc" & ".jpg" files.
 CleanStart="False" # When set to True, downloader downloads directory contents is purged on initialization.
 AppProcess="Lidarr" # Specify which app to use for processing. ('Lidarr', 'External', 'AllDownloads', "None')
-Timeout="5m" # Timeout for downloader to stop it sticking on a single artist. Valid units of time are 's' for seconds, 'm' for minutes or 'h' for hours.
 Mode="wanted" # Mode to choose what to passthrough to downloader, "wanted" gets only the albums that are marked as monitored in Lidarr, "artist" will just passthrough the artist. (wanted,artist)
 WantedModeType="missing" # "missing" or "cutoff" = "missing" has client search for missing albums, "cutoff" has client search for albums not meeting quality cutoff (ie: upgrade mp3 to flac, based on lidarr settings)
 
