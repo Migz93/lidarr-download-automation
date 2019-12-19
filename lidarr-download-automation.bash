@@ -49,6 +49,7 @@ GetTotalAlbumsLidarrReq(){
 ProcessAlbumsLidarrReq(){
 	LidArtistName=$(echo "${wantit}" | jq -r .records[${i}].artist.sortName)
 	LidArtistDLName=$(echo "${wantit}" | jq -r .records[${i}].artist.artistName)
+	LidArtistNameCap=$(echo "${wantit}" | jq -r .records[${i}].artist.artistName)
 	LidAlbumName=$(echo "${wantit}" | jq -r .records[${i}].title | iconv -f UTF-8 -t ASCII//TRANSLIT | tr '[:upper:]' '[:lower:]' | tr -cd '[:print:]' | tr -d '[:punct:]' | tr -s '[:space:]' )
 	LidArtistPath=$(echo "${wantit}" | jq -r .records[${i}].artist.path)
 	#M1 -- retrieve deezer artist id -- from lidarr
