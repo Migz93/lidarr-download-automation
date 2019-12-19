@@ -263,6 +263,7 @@ ExternalProcess(){
 }
 
 LidarrImport () {
+	IFS=$OLDIFS
 	if [ ! -d "${LidArtistPath}" ];	then
 		logit "Destination Does not exist, creating ${LidArtistPath}"
 		mkdir "${LidArtistPath}"
@@ -273,6 +274,7 @@ LidarrImport () {
 	Permissions "${LidArtistPath}"
 	LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
 	logit "Notified Lidarr to scan ${LidArtistNameCap}"
+	IFS=$'\n'
 }
 
 ErrorExit(){
