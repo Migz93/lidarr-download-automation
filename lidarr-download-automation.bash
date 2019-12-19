@@ -263,18 +263,16 @@ ExternalProcess(){
 }
 
 LidarrImport () {
-	IFS=$OLDIFS
 	if [ ! -d "${LidArtistPath}" ];	then
 		logit "Destination Does not exist, creating ${LidArtistPath}"
 		mkdir "${LidArtistPath}"
 		chmod ${FolderPermissions} "${LidArtistPath}"
 	fi
-	find "${DownloadDir}" -type d -iname "*${LidArtistName}* - *" | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if mv \"@\" \"${LidArtistPath}/\"; then echo \"Imported @ to: ${LidArtistPath}\"; else echo \"ERROR: Duplicate, removing...\" && rm -rf \"@\"; fi;"
+	find "${DownloadDir}" -type d -iname "*${LidArtistNameCap}* - *" | sed -e "s/'/\\'/g" -e 's/\$/\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if mv \"@\" \"${LidArtistPath}/\"; then echo \"Imported @ to: ${LidArtistPath}\"; else echo \"ERROR: Duplicate, removing...\" && rm -rf \"@\"; fi;"
 	logit "Moved to Lidarr"
 	Permissions "${LidArtistPath}"
 	LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
 	logit "Notified Lidarr to scan ${LidArtistNameCap}"
-	IFS=$'\n'
 }
 
 ErrorExit(){
