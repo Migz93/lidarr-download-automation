@@ -114,7 +114,7 @@ DownloadURL(){
 						rm -rf "${m}"
 					fi
 				done
-				logit "${DLURL}" >> "${LogDir}"/${DownloadLogName}
+				logit "${LidArtistNameCap}: ${DLURL}" >> "${LogDir}"/${DownloadLogName}
 				Permissions "${DownloadDir}"
 			else 
 				logit "still downloading... $URL"
