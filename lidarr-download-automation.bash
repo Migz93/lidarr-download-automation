@@ -264,16 +264,20 @@ ExternalProcess(){
 }
 
 LidarrImport () {
-	if [ ! -d "${LidArtistPath}" ];	then
-		logit "Destination Does not exist, creating ${LidArtistPath}"
-		mkdir "${LidArtistPath}"
-		chmod ${FolderPermissions} "${LidArtistPath}"
+	if find "${DownloadDir}" -type d -iname "*${LidArtistNameCap}* - *"  | read; then
+		if [ ! -d "${LidArtistPath}" ];	then
+			logit "Destination Does not exist, creating ${LidArtistPath}"
+			mkdir "${LidArtistPath}"
+			chmod ${FolderPermissions} "${LidArtistPath}"
+		fi
+		find "${DownloadDir}" -type d -iname "*${LidArtistNameCap}* - *" -exec mv {} "${LidArtistPath}/" \; 2>/dev/null
+		logit "Moved to Lidarr"
+		Permissions "${LidArtistPath}"
+		LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
+		logit "Notified Lidarr to scan ${LidArtistNameCap}"
+	else
+		logit "No ${LidArtistNameCap} files to import"
 	fi
-	find "${DownloadDir}" -type d -iname "*${LidArtistNameCap}* - *" -exec mv {} "${LidArtistPath}/" \; 2>/dev/null
-	logit "Moved to Lidarr"
-	Permissions "${LidArtistPath}"
-	LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
-	logit "Notified Lidarr to scan ${LidArtistNameCap}"
 }
 
 ErrorExit(){
