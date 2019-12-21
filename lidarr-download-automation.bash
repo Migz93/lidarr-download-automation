@@ -271,11 +271,16 @@ LidarrImport () {
 			mkdir "${LidArtistPath}"
 			chmod ${FolderPermissions} "${LidArtistPath}"
 		fi
-		find "${DownloadDir}" -type d -iname "*${LidArtistNameCap}* - *" -exec mv {} "${LidArtistPath}/" \; 2>/dev/null
-		logit "Moved to Lidarr"
-		Permissions "${LidArtistPath}"
-		LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
-		logit "Notified Lidarr to scan ${LidArtistNameCap}"
+		find "${DownloadDir}" -type d -iname "*${cleanstring}* - *" -print0 | while IFS= read -r -d '' folder; do
+			if mv "$folder" "${LidArtistPath}/"; then
+				logit "Moved \"$folder\" to \"${LidArtistPath}\" for import"
+				Permissions "${LidArtistPath}"
+				LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
+				logit "Notified Lidarr to scan ${LidArtistNameCap}"
+			else
+				logit "ERROR: \"$folder\" - Already exists in destination, deleting..."
+				rm -rf "$folder"
+			fi
 	else
 		logit "No ${LidArtistNameCap} files to import"
 	fi
