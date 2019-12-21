@@ -281,6 +281,7 @@ LidarrImport () {
 				logit "ERROR: \"$folder\" - Already exists in destination, deleting..."
 				rm -rf "$folder"
 			fi
+		done
 	else
 		logit "No ${LidArtistNameCap} files to import"
 	fi
