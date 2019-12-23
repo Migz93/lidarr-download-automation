@@ -265,7 +265,12 @@ ExternalProcess(){
 }
 
 LidarrImport () {
-	cleanstring="${LidArtistName//\ /*}"
+	artistname="${LidArtistNameCap//\ /*}"
+	if find "${DownloadDir}" -type d -iname "*${artistname}* - *"  | read; then
+		cleanstring="${LidArtistNameCap//\ /*}"
+	else
+		cleanstring="${LidArtistName//\ /*}"
+	fi
 	if find "${DownloadDir}" -type d -iname "*${cleanstring}* - *"  | read; then
 		if [ ! -d "${LidArtistPath}" ];	then
 			logit "Destination Does not exist, creating ${LidArtistPath}"
