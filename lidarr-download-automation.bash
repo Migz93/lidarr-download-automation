@@ -13,6 +13,7 @@ ArtistsLidarrReq(){
 GetTotalArtistsLidarrReq(){
 	TotalLidArtistNames=$(echo "${wantit}"|jq -r '.[].sortName' |wc -l  )
 }
+
 ProcessArtistsLidarrReq(){
 	LidArtistID=$(echo "${wantit}" | jq -r .[$i].id)
 	LidArtistName=$(echo "${wantit}" | jq -r .[$i].sortName)
@@ -264,9 +265,7 @@ ExternalProcess(){
 }
 
 LidarrImport () {
-	cleanstringa="${LidArtistNameCap//\“/_}"
-	cleanstringb="${cleanstringa//\”/_}"
-	cleanstring="${cleanstringb//\"/_}"
+	cleanstring="${LidArtistName//\ /*}"
 	if find "${DownloadDir}" -type d -iname "*${cleanstring}* - *"  | read; then
 		if [ ! -d "${LidArtistPath}" ];	then
 			logit "Destination Does not exist, creating ${LidArtistPath}"
