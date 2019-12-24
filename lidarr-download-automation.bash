@@ -430,17 +430,29 @@ ArtistModeBegin(){
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
-			logit "Downloading all explicit albums..."
-			explicitalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | sort -u))
-			for explicitalbum in "${explicitalbumlist[@]}"; do
-				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${explicitalbum}" | read
+			
+			if [ "${LyricType}" = explicit ]; then
+				logit "Downloading all explicit albums..."
+				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | sort -u))
+			elif [ "${LyricType}" = clean ]; then
+				logit "Downloading all clean albums..."
+				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | sort -u))
+			elif [ "${LyricType}" = all ]; then
+				logit "Downloading all albums..."
+				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| .id" | sort -u))
+			else 
+				logit "Downloading all albums..."
+				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| .id" | sort -u))
+			fi
+			for album in "${albumlist[@]}"; do
+				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
 					then 
-						logit "Previously Downloaded: ${explicitalbum}, skipping..."
+						logit "Previously Downloaded: ${album}, skipping..."
 					else
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
-						logit "Downloading Album: ${explicitalbum}"
-						DownloadURL "https://www.deezer.com/album/${explicitalbum}" 
+						logit "Downloading Album: ${album}"
+						DownloadURL "https://www.deezer.com/album/${album}" 
 				
 						if [ "$(ls -A "${DownloadDir}")" ]; then
 							Cleanup
@@ -471,49 +483,6 @@ ArtistModeBegin(){
 						rm "${DownloadDir}/temp-hold"
 						fi
 				fi
-			done
-			logit "Downloading all clean albums..."
-			cleanlbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | sort -u))
-			for cleanalbum in "${cleanlbumlist[@]}"; do
-				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${cleanalbum}" | read
-					then 
-						logit "Previously Downloaded: ${cleanalbum}, skipping..."
-					else
-						rm "${DownloadDir}/temp-hold" 2>/dev/null
-						touch "${DownloadDir}/temp-hold"
-						logit "Downloading Album: ${cleanalbum}"
-						DownloadURL "https://www.deezer.com/album/${cleanalbum}" 
-				
-						if [ "$(ls -A "${DownloadDir}")" ]; then
-							Cleanup
-							if [ "${Verification}" = True ]; then
-								Verify
-							else
-								logit "Skipping File Verification"
-							fi
-							if [ "${Convert}" = True ]; then
-								Convert
-							else
-								logit "Skipping FLAC Conversion"
-							fi
-							if [ "${ReplaygainTagging}" = True ]; then
-								Replaygain
-							else
-								logit "Skipping Replaygain Tagging"
-							fi
-							if [ "${AppProcess}" = External ]; then
-								ExternalProcess
-							elif [ "${AppProcess}" = Lidarr ]; then
-								LidarrProcess
-							elif [ "${AppProcess}" = AllDownloads ]; then
-								LidarrImport
-							else
-								logit "Skipping Any Processing"
-							fi
-						rm "${DownloadDir}/temp-hold"
-						fi
-				fi
-					
 			done
 			if [ "${AppProcess}" = AllDownloads ]; then
 				LidarrImport
