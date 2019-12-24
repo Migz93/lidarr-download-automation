@@ -437,9 +437,6 @@ ArtistModeBegin(){
 			elif [ "${LyricType}" = clean ]; then
 				logit "Downloading all clean albums..."
 				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | sort -u))
-			elif [ "${LyricType}" = all ]; then
-				logit "Downloading all albums..."
-				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| .id" | sort -u))
 			else 
 				logit "Downloading all albums..."
 				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| .id" | sort -u))
