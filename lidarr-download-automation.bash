@@ -266,10 +266,13 @@ ExternalProcess(){
 
 LidarrImport () {
 	artistname="${LidArtistNameCap//\ /*}"
-	if find "${DownloadDir}" -type d -iname "*${artistname}* - *"  | read; then
+	artistnamed="${LidArtistName//\ /*}"
+	if find "${DownloadDir}" -type d -iname "*${artistname}* - *" -newer "${DownloadDir}/temp-hold" | read; then
 		cleanstring="${LidArtistNameCap//\ /*}"
-	else
+	elif find "${DownloadDir}" -type d -iname "*${artistnamed}* - *" -newer "${DownloadDir}/temp-hold" | read; then
 		cleanstring="${LidArtistName//\ /*}"
+	else
+		cleanstring="${LidArtistNameCap//\ /*}"
 	fi
 	if find "${DownloadDir}" -type d -iname "*${cleanstring}* - *"  | read; then
 		if [ ! -d "${LidArtistPath}" ];	then
