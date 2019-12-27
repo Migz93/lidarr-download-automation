@@ -431,7 +431,7 @@ ArtistModeBegin(){
 				continue
 			fi
 			
-			if [ "${DownloadArtistArtwork}" = true ]; then 
+			if [ "${DownloadArtistArtwork}" = True ]; then 
 			
 				artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
 				if [ ! -d "${LidArtistPath}" ];	then
