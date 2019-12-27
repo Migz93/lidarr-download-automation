@@ -432,25 +432,7 @@ ArtistModeBegin(){
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
-			
-			if [ "${DownloadArtistArtwork}" = True ]; then 
-					
-				if [ ! -d "${LidArtistPath}" ];	then
-					logit "Destination Does not exist, creating ${LidArtistPath}"
-					mkdir "${LidArtistPath}"
-					chmod ${FolderPermissions} "${LidArtistPath}"
-				fi
-				logit "Downloading artist artwork..."
-				if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
-					artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
-					logit "Downloading: ${artistartwork}"
-					curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
-					chmod ${FolderPermissions} "${LidArtistPath}"
-				else
-					logit "Artwork exists, skipping..."
-				fi
-			fi
-			
+								
 			if [ "${AppProcess}" = AllDownloads ]; then
 				LidarrImport
 			fi
@@ -470,6 +452,25 @@ ArtistModeBegin(){
 					then 
 						logit "Previously Downloaded: ${album}, skipping..."
 					else
+					
+						if [ "${DownloadArtistArtwork}" = True ]; then 
+					
+							if [ ! -d "${LidArtistPath}" ];	then
+								logit "Destination Does not exist, creating ${LidArtistPath}"
+								mkdir "${LidArtistPath}"
+								chmod ${FolderPermissions} "${LidArtistPath}"
+							fi
+							logit "Downloading artist artwork..."
+							if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
+								artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
+								logit "Downloading: ${artistartwork}"
+								curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
+								chmod ${FolderPermissions} "${LidArtistPath}"
+							else
+								logit "Artwork exists, skipping..."
+							fi
+						fi
+					
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
 						logit "Downloading Album: ${album}"
