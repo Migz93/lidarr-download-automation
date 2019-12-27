@@ -139,7 +139,7 @@ Convert () {
 	if [ -x "$(command -v ffmpeg)" ]; then
 		if [ "${ConversionFormat}" = OPUS ]; then
 			logit "OPUS CONVERSION START"
-			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libopus -ab 160k -vbr off -application audio \"@.opus\" && echo \"CONVERSION SUCCESS: @.opus\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && logit "OPUS CONVERSION COMPLETE"	
+			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e 's/.flac$//' -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "ffmpeg -loglevel warning -hide_banner -stats -i \"@.flac\" -n -vn -acodec libopus -ab 192k -vbr off -application audio \"@.opus\" && echo \"CONVERSION SUCCESS: @.opus\" && rm \"@.flac\" && echo \"SOURCE FILE DELETED: @.flac\"" && logit "OPUS CONVERSION COMPLETE"	
 		fi
 		if [ "${ConversionFormat}" = AAC ]; then
 			logit "AAC CONVERSION START"
@@ -429,6 +429,21 @@ ArtistModeBegin(){
 				logit "Cant get DeezerArtistURL or artistid.. skipping"
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
+			fi
+			
+			if [ "${DownloadArtistArtwork}" = true ]; then 
+			
+				artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
+				if [ ! -d "${LidArtistPath}" ];	then
+					logit "Destination Does not exist, creating ${LidArtistPath}"
+					mkdir "${LidArtistPath}"
+					chmod ${FolderPermissions} "${LidArtistPath}"
+				fi
+				
+				if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
+					curl -o "${LidArtistPath}/folder.jpg" ${artistartwork}
+					chmod ${FolderPermissions} "${LidArtistPath}"
+				fi							
 			fi
 			
 			if [ "${LyricType}" = explicit ]; then
