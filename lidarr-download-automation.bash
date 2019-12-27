@@ -266,21 +266,20 @@ ExternalProcess(){
 
 LidarrImport () {
 	artistname="${LidArtistNameCap//\ /*}"
-	artistnamed="${LidArtistName//\ /*}"
-	if find "${DownloadDir}" -type d -iname "*${artistname}* - *" -newer "${DownloadDir}/temp-hold" | read; then
-		cleanstring="${artistname}"
-	elif find "${DownloadDir}" -type d -iname "*${artistnamed}* - *" -newer "${DownloadDir}/temp-hold" | read; then
-		cleanstring="${artistnamed}"
+	if find "${DownloadDir}" -type d -iname "*(${DeezerArtistID}) - *" | read; then
+		searchstring="*(${DeezerArtistID}) - *"
+	elif find "${DownloadDir}" -type d -iname "*${artistname}* - *" -newer "${DownloadDir}/temp-hold" | read; then
+		searchstring="*${artistname}* - *"
 	else
-		cleanstring="${artistname}"
+		searchstring="*${artistname}* - *"
 	fi
-	if find "${DownloadDir}" -type d -iname "*${cleanstring}* - *"  | read; then
+	if find "${DownloadDir}" -type d -iname "${searchstring}"  | read; then
 		if [ ! -d "${LidArtistPath}" ];	then
 			logit "Destination Does not exist, creating ${LidArtistPath}"
 			mkdir "${LidArtistPath}"
 			chmod ${FolderPermissions} "${LidArtistPath}"
 		fi
-		find "${DownloadDir}" -type d -iname "*${cleanstring}* - *" -print0 | while IFS= read -r -d '' folder; do
+		find "${DownloadDir}" -type d -iname "${searchstring}" -print0 | while IFS= read -r -d '' folder; do
 			if mv "$folder" "${LidArtistPath}/"; then
 				logit "Moved \"$folder\" to \"${LidArtistPath}\" for import"
 				Permissions "${LidArtistPath}"
