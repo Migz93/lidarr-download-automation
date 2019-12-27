@@ -268,11 +268,11 @@ LidarrImport () {
 	artistname="${LidArtistNameCap//\ /*}"
 	artistnamed="${LidArtistName//\ /*}"
 	if find "${DownloadDir}" -type d -iname "*${artistname}* - *" -newer "${DownloadDir}/temp-hold" | read; then
-		cleanstring="${LidArtistNameCap//\ /*}"
+		cleanstring="${artistname}"
 	elif find "${DownloadDir}" -type d -iname "*${artistnamed}* - *" -newer "${DownloadDir}/temp-hold" | read; then
-		cleanstring="${LidArtistName//\ /*}"
+		cleanstring="${artistnamed}"
 	else
-		cleanstring="${LidArtistNameCap//\ /*}"
+		cleanstring="${artistname}"
 	fi
 	if find "${DownloadDir}" -type d -iname "*${cleanstring}* - *"  | read; then
 		if [ ! -d "${LidArtistPath}" ];	then
