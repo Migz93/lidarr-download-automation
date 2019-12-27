@@ -432,18 +432,21 @@ ArtistModeBegin(){
 			fi
 			
 			if [ "${DownloadArtistArtwork}" = True ]; then 
-			
-				artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
+					
 				if [ ! -d "${LidArtistPath}" ];	then
 					logit "Destination Does not exist, creating ${LidArtistPath}"
 					mkdir "${LidArtistPath}"
 					chmod ${FolderPermissions} "${LidArtistPath}"
 				fi
-				
+				logit "Downloading artist artwork..."
 				if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
-					curl -o "${LidArtistPath}/folder.jpg" ${artistartwork}
+					artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
+					logit "Downloading: ${artistartwork}"
+					curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
 					chmod ${FolderPermissions} "${LidArtistPath}"
-				fi							
+				else
+					logit "Artwork exists, skipping..."
+				fi
 			fi
 			
 			if [ "${LyricType}" = explicit ]; then
