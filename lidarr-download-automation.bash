@@ -358,6 +358,11 @@ WantedModeBegin(){
 			continue
 		fi
 		if [ -n "${DeezerAlbumURL}" ]; then
+		
+			if [ "${AppProcess}" = AllDownloads ]; then
+				LidarrImport
+			fi
+			
 			if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${DeezerAlbumURL}" | read
 				then 
 					logit "Previously Downloaded: ${DeezerAlbumURL}, skipping..."
@@ -393,9 +398,6 @@ WantedModeBegin(){
 						fi
 					fi
 					rm "${DownloadDir}/temp-hold"
-			fi
-			if [ "${AppProcess}" = AllDownloads ]; then
-				LidarrImport
 			fi
 		else
 			logit "Cant match the wanted album to an album on deezer .. skipping"
@@ -449,6 +451,10 @@ ArtistModeBegin(){
 				fi
 			fi
 			
+			if [ "${AppProcess}" = AllDownloads ]; then
+				LidarrImport
+			fi
+			
 			if [ "${LyricType}" = explicit ]; then
 				logit "Downloading all explicit albums..."
 				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | sort -u))
@@ -499,9 +505,6 @@ ArtistModeBegin(){
 						fi
 				fi
 			done
-			if [ "${AppProcess}" = AllDownloads ]; then
-				LidarrImport
-			fi
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
