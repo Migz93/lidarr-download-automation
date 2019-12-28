@@ -431,7 +431,13 @@ ArtistModeBegin(){
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
-								
+			
+			if [ "${DownloadArtistArtwork}" = True ]; then 
+				if find "${LidArtistPath}/folder.jpg" -type f -size -16k | read; then
+					rm "${LidArtistPath}/folder.jpg"
+				fi
+			fi
+			
 			if [ "${AppProcess}" = AllDownloads ]; then
 				LidarrImport
 			fi
@@ -451,16 +457,11 @@ ArtistModeBegin(){
 					then 
 						logit "Previously Downloaded: ${album}, skipping..."
 					else
-					
 						if [ "${DownloadArtistArtwork}" = True ]; then 
-					
 							if [ ! -d "${LidArtistPath}" ];	then
 								logit "Destination Does not exist, creating ${LidArtistPath}"
 								mkdir "${LidArtistPath}"
 								chmod ${FolderPermissions} "${LidArtistPath}"
-							fi
-							if find "${LidArtistPath}/folder.jpg" -type f -size -16k | read; then
-								rm "${LidArtistPath}/folder.jpg"
 							fi
 							logit "Downloading artist artwork..."
 							if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
@@ -468,7 +469,6 @@ ArtistModeBegin(){
 								logit "Downloading: ${artistartwork}"
 								curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
 								chmod ${FolderPermissions} "${LidArtistPath}"
-								
 								if find "${LidArtistPath}/folder.jpg" -type f -size -16k | read; then
 									logit "ERROR: Only generic artwork found, removing to allow lidarr to update it"
 									rm "${LidArtistPath}/folder.jpg"
