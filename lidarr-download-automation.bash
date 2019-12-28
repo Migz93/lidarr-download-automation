@@ -433,15 +433,17 @@ ArtistModeBegin(){
 			fi
 			
 			if [ "${DownloadArtistArtwork}" = True ]; then
-				logit "Checking for low quality artist artwork"
-				if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
-					logit "Low quality (folder.jpg < ${MinArtistArtworkSize}) artwork found, deleting..."
-					rm "${LidArtistPath}/folder.jpg"
-					logit "Sending notification to Lidarr to re-scan artist and update local artwork metadata"
-					LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
-					logit "Notified Lidarr to scan ${LidArtistNameCap}"	
-				else
-					logit "SUCCESS: Artwork meets size requirements: folder.jpg > ${MinArtistArtworkSize}"
+				if [ -f "${LidArtistPath}/folder.jpg"  ]; then
+					logit "Checking for low quality artist artwork"
+					if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
+						logit "Low quality (folder.jpg < ${MinArtistArtworkSize}) artwork found, deleting..."
+						rm "${LidArtistPath}/folder.jpg"
+						logit "Sending notification to Lidarr to re-scan artist and update local artwork metadata"
+						LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
+						logit "Notified Lidarr to scan ${LidArtistNameCap}"	
+					else
+						logit "SUCCESS: Artwork meets size requirements: folder.jpg > ${MinArtistArtworkSize}"
+					fi
 				fi
 			fi
 			
