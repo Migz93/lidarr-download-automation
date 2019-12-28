@@ -435,11 +435,13 @@ ArtistModeBegin(){
 			if [ "${DownloadArtistArtwork}" = True ]; then
 				logit "Checking for low quality artist artwork"
 				if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
-					logit "Low quality artist artwork found, deleting..."
+					logit "Low quality (folder.jpg < ${MinArtistArtworkSize}) artwork found, deleting..."
 					rm "${LidArtistPath}/folder.jpg"
 					logit "Sending notification to Lidarr to re-scan artist and update local artwork metadata"
 					LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
 					logit "Notified Lidarr to scan ${LidArtistNameCap}"	
+				else
+					logit "SUCCESS: Artwork meets size requirements: folder.jpg > ${MinArtistArtworkSize}"
 				fi
 			fi
 			
@@ -475,7 +477,7 @@ ArtistModeBegin(){
 								curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
 								chmod ${FolderPermissions} "${LidArtistPath}"
 								if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
-									logit "ERROR: Only generic artwork found, removing to allow lidarr to update it"
+									logit "ERROR: Only artwork is smaller than \"${MinArtistArtworkSize}\", removing to allow lidarr to update it"
 									rm "${LidArtistPath}/folder.jpg"
 								else 
 									echo "SUCCESS: Artwork downloaded successfully"
