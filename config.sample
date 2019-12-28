@@ -28,6 +28,7 @@ DeezloaderRemixUrl="http://127.0.0.1:1730" # Set domain or IP to your Deezloader
 Quality="320" # SET TO: 128 or 320 or FLAC - Specifies the initial target download quality.
 LyricType="all" # SET TO: explicit or clean or all - Only downloading songs according to lyric type, applies only to artist mode (default is "all" (clean & explicit)
 DownloadArtistArtwork="True" # True = Enabled, downloads artist profile picture when using "artist" download mode
+MinArtistArtworkSize="16k" # This number is used to determine the minimum artwork size, anything smaller will be deleted
 KeepOnly="False" # True = ENABLED, Keeps only quality type selected above.
 DownloadLogName="download.log" # Log filename.
 ClearDownloadLog="False" # True = ENABLED, Enables duplicate downloading, disabled prevents duplicate downloads between script runs.
