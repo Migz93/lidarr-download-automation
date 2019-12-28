@@ -459,12 +459,22 @@ ArtistModeBegin(){
 								mkdir "${LidArtistPath}"
 								chmod ${FolderPermissions} "${LidArtistPath}"
 							fi
+							if find "${LidArtistPath}/folder.jpg" -type f -size -16k | read; then
+								rm "${LidArtistPath}/folder.jpg"
+							fi
 							logit "Downloading artist artwork..."
 							if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
 								artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
 								logit "Downloading: ${artistartwork}"
 								curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
 								chmod ${FolderPermissions} "${LidArtistPath}"
+								
+								if find "${LidArtistPath}/folder.jpg" -type f -size -16k | read; then
+									logit "ERROR: Only generic artwork found, removing to allow lidarr to update it"
+									rm "${LidArtistPath}/folder.jpg"
+								else 
+									echo "SUCCESS: Artwork downloaded successfully"
+								fi								
 							else
 								logit "Artwork exists, skipping..."
 							fi
