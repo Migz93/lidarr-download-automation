@@ -426,6 +426,11 @@ ArtistModeBegin(){
 			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${DeezerArtistURL}" ]; then
+			
+			if [ "${AppProcess}" = AllDownloads ]; then
+				LidarrImport
+			fi
+			
 			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
 				logit "Cant get DeezerArtistURL or artistid.. skipping"
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
@@ -445,10 +450,6 @@ ArtistModeBegin(){
 						logit "SUCCESS: Artwork meets size requirements: folder.jpg > ${MinArtistArtworkSize}"
 					fi
 				fi
-			fi
-			
-			if [ "${AppProcess}" = AllDownloads ]; then
-				LidarrImport
 			fi
 			
 			if [ "${LyricType}" = explicit ]; then
