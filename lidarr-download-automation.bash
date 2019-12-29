@@ -346,6 +346,7 @@ WantedModeBegin(){
 		else
 			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
+		
 		logit "Querying ${i} of ${loopindex}"
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${LidAlbumName}" ]; then
 			QueryAlbumURL
@@ -356,7 +357,46 @@ WantedModeBegin(){
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 			continue
 		fi
+		
+		if [ "${DownloadArtistArtwork}" = True ]; then
+			if [ -f "${LidArtistPath}/folder.jpg"  ]; then
+				logit "Checking for low quality artist artwork"
+				if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
+					logit "Low quality (folder.jpg < ${MinArtistArtworkSize}) artwork found, deleting..."
+					rm "${LidArtistPath}/folder.jpg"
+					logit "Sending notification to Lidarr to re-scan artist and update local artwork metadata"
+					LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
+					logit "Notified Lidarr to scan ${LidArtistNameCap}"	
+				else
+					logit "SUCCESS: Artwork meets size requirements: folder.jpg > ${MinArtistArtworkSize}"
+				fi
+			fi
+		fi
+		
 		if [ -n "${DeezerAlbumURL}" ]; then
+	
+			if [ "${DownloadArtistArtwork}" = True ]; then 
+				if [ ! -d "${LidArtistPath}" ];	then
+					logit "Destination Does not exist, creating ${LidArtistPath}"
+					mkdir "${LidArtistPath}"
+					chmod ${FolderPermissions} "${LidArtistPath}"
+				fi
+				logit "Downloading artist artwork..."
+				if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
+					artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
+					logit "Downloading: ${artistartwork}"
+					curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
+					chmod ${FolderPermissions} "${LidArtistPath}"
+					if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
+						logit "ERROR: Only artwork is smaller than \"${MinArtistArtworkSize}\", removing to allow lidarr to update it"
+						rm "${LidArtistPath}/folder.jpg"
+					else 
+						echo "SUCCESS: Artwork downloaded successfully"
+					fi								
+				else
+					logit "Artwork exists, skipping..."
+				fi
+			fi
 		
 			if [ "${AppProcess}" = AllDownloads ]; then
 				LidarrImport
