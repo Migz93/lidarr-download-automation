@@ -82,7 +82,7 @@ QueryAlbumURL(){
 		logit "Trying fuzzy search"
 		SanArtist="${LidArtistName// /%20}"
 		SanAlbum="${LidAlbumName// /%20}"
-		searchQuery="q=artist:\"${SanArtist//[^[:alnum:]%]}\"&q=album:\"${SanAlbum//[^[:alnum:]%]}\""
+		searchQuery="q=artist:\"${SanArtist//[^[:alnum:]%]}\"%20album:\"${SanAlbum//[^[:alnum:]%]}\""
 		searchQuery="https://api.deezer.com/search?${searchQuery}"
 		DeezerDiscogFuzzy=$(curl -s "${searchQuery}");
 		DeezerAlbumID=$(echo "${DeezerDiscogFuzzy}" |jq '.[]|.[]?'|jq -r --argjson  DeezerArtistID "$DeezerArtistID" 'select(.artist.id==$DeezerArtistID) |.album.id'|sort -u|head -n1)
