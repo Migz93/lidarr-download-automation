@@ -89,7 +89,11 @@ QueryAlbumURL(){
 		fi
 		searchQuery="https://api.deezer.com/search?${searchQuery}"
 		DeezerDiscogFuzzy=$(curl -s "${searchQuery}");
-		DeezerAlbumID=$(echo "${DeezerDiscogFuzzy}" |jq '.[]|.[]?'|jq -r --argjson  DeezerArtistID "$DeezerArtistID" 'select(.artist.id==$DeezerArtistID) |.album.id'|sort -u|head -n1)
+		if [ "${LidArtistName}" = "various artists" ]; then 
+			DeezerAlbumID=$(echo "${DeezerDiscogFuzzy}" | jq -r ".data | .[] | .album | .id" | sort -u|head -n1)
+		else
+			DeezerAlbumID=$(echo "${DeezerDiscogFuzzy}" |jq '.[]|.[]?'|jq -r --argjson  DeezerArtistID "$DeezerArtistID" 'select(.artist.id==$DeezerArtistID) |.album.id'|sort -u|head -n1)
+		fi		
 		if [ -n "${DeezerAlbumID}" ];then
 			DeezerAlbumURL="https://www.deezer.com/album/${DeezerAlbumID}"
 			logit "Fuzzy search match ${DeezerAlbumURL}"
