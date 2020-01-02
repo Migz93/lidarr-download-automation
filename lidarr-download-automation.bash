@@ -303,6 +303,48 @@ LidarrImport () {
 	fi
 }
 
+DeDupe () {
+
+	if find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -not -iname "*Explicit*" | read; then
+
+		find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -not -iname "*Explicit*" -exec bash -c '
+
+			if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
+				echo "Duplicate, deleting..."
+				rm -rf "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+			else
+				mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				echo "Clean albums renamed"
+			fi
+
+		' {} \;
+	else
+		echo "no files to process"
+	fi
+
+	if find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -iname "*Explicit*" | read; then
+
+		find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -iname "*Explicit*" -exec bash -c '
+			if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
+				echo "Duplicate clean tracks found, deleting..."
+				rm -rf "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				echo "Renaming Explicit Album"
+				mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
+			else
+				if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")" ]; then
+					echo "Album already renamed"
+				else
+					echo "Renaming Explicit Album"
+					mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
+				fi
+			fi
+		' {} \;
+	else
+		echo "no files to process"
+	fi
+
+}
+
 ErrorExit(){
 	case ${2} in
 		2)	echo ${1};exit ${2};;
