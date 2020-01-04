@@ -303,7 +303,7 @@ LidarrImport () {
 	fi
 }
 
-DeDupe () {
+DeDupeProcess () {
 
 	if find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -not -iname "*Explicit*" | read; then
 
@@ -615,6 +615,11 @@ ArtistModeBegin(){
 						fi
 				fi
 			done
+			if [ "${DeDupe}" = True ]; then
+				DeDupeProcess
+			else
+				logit "Skipping DeDupe of files"
+			fi
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
