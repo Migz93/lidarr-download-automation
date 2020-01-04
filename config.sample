@@ -34,6 +34,11 @@ DownloadLogName="download.log" # Log filename.
 ClearDownloadLog="False" # True = ENABLED, Enables duplicate downloading, disabled prevents duplicate downloads between script runs.
 PreviouslyDownloaded="True" # Checks Download log before downloading artist/albums to prevent downloading duplicates.
 
+######################## DOWNLOADER RECOMMENDED FILE NAMING CONVENTIONS ############################
+# Track Name Template: %disc%%number% - %title% %explicit%
+# Album Track Name Template: %disc%%number% - %title% %explicit%
+# Alubm Name Template: %artist% (%artist_id%) - %album% %explicit%(%year%) (%type%) (%album_id%) (WEB)-DREMIX
+
 ############################## DOWNLOAD POSTPROCESSING CONFIGURATION ###############################
 Threads="1" # Sets the maximum number of threads for multi-threaded operations, setting to "0" will use all available threads!
 Verification="False" # Checks FLAC files for errors, and deletes bad files. MP3 are scanned and fixed for errors in the headers. (Requires flac and mp3val to be installed)
@@ -49,6 +54,7 @@ SkipLogName="skipped.csv" # Logs any info if an item was skipped.
 CannotImport="False" # Set to True to delete files and empty folders that cannot be imported by "Lidarr" AppProcess  ".lrc" & ".jpg" files.
 CleanStart="False" # When set to True, downloader downloads directory contents is purged on initialization.
 AppProcess="Lidarr" # Specify which app to use for processing. ('Lidarr', 'External', 'AllDownloads', "None')
+DeDupe="False" # True = Enabled, this setting works best when used with "artist" download mode, requires using the downloader recommended file naming convention
 Mode="wanted" # Mode to choose what to passthrough to downloader, "wanted" gets only the albums that are marked as monitored in Lidarr, "artist" will just passthrough the artist. (wanted,artist)
 WantedModeType="missing" # "missing" or "cutoff" = "missing" has client search for missing albums, "cutoff" has client search for albums not meeting quality cutoff (ie: upgrade mp3 to flac, based on lidarr settings)
 
