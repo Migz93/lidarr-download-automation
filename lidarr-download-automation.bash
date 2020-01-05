@@ -333,7 +333,8 @@ DeDupeProcess () {
 				mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
 			else
 				if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")" ]; then
-					echo "Album already renamed"
+					echo "Duplicate found, deleting..."
+					rm -rf "$0"
 				else
 					echo "Renaming Explicit Album"
 					mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
