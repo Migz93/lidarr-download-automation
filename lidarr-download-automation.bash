@@ -304,10 +304,10 @@ LidarrImport () {
 }
 
 DeDupeProcess () {
-
-	if find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -not -iname "*Explicit*" | read; then
-
-		find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -not -iname "*Explicit*" -exec bash -c '
+	logit "Beginning DeDupe proceess"
+	if find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([0-9]*) (WEB)-DREMIX$" | read; then
+		logit "Clean albums found for renaming"
+		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([0-9]*) (WEB)-DREMIX$" -exec bash -c '
 
 			if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 				echo "Duplicate, deleting..."
@@ -318,13 +318,14 @@ DeDupeProcess () {
 			fi
 
 		' {} \;
+		logit "Clean albums renamed and deduped..." 
 	else
-		echo "no files to process"
+		logit "no files to process"
 	fi
-
-	if find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -iname "*Explicit*" | read; then
-
-		find "${LidArtistPath}" -type d -mindepth 1 -maxdepth 1 -iname "*Explicit*" -exec bash -c '
+	logit "Finding explicit files"
+	if find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([0-9]*) (WEB)-DREMIX$" | read; then
+		logit "Explicit files found, renaming and removing matched clean versions..."
+		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([0-9]*) (WEB)-DREMIX$" -exec bash -c '
 			if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 				echo "Duplicate clean tracks found, deleting..."
 				rm -rf "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
@@ -339,10 +340,11 @@ DeDupeProcess () {
 				fi
 			fi
 		' {} \;
+		logit "Renaming and cleanup of clean versions complete"
 	else
-		echo "no files to process"
+		logit "no files to process"
 	fi
-
+	logit "DeDupe processing complete"
 }
 
 ErrorExit(){
