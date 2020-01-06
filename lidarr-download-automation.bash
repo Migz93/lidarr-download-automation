@@ -350,6 +350,8 @@ DeDupeProcess () {
 		logit "Folders found, cleaning up folders"
 		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([0-9]+) ([a-zA-Z]+) (WEB)-DREMIX$" -exec rm -rf {} \;
 		logit "Cleanup complete"
+	else
+		logit "No folders found"
 	fi
 	logit "DeDupe processing complete"
 }
