@@ -291,6 +291,11 @@ LidarrImport () {
 			if mv "$folder" "${LidArtistPath}/"; then
 				logit "Moved \"$folder\" to \"${LidArtistPath}\" for import"
 				Permissions "${LidArtistPath}"
+				if [ "${DeDupe}" = True ]; then
+					DeDupeProcess
+				else
+					logit "Skipping DeDupe of files"
+				fi
 				LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
 				logit "Notified Lidarr to scan ${LidArtistNameCap}"
 			else
@@ -646,11 +651,6 @@ ArtistModeBegin(){
 								LidarrImport
 							else
 								logit "Skipping Any Processing"
-							fi
-							if [ "${DeDupe}" = True ]; then
-								DeDupeProcess
-							else
-								logit "Skipping DeDupe of files"
 							fi
 						rm "${DownloadDir}/temp-hold"
 						fi
