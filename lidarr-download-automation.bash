@@ -313,8 +313,11 @@ DeDupeProcess () {
 				echo "Duplicate, deleting..."
 				rm -rf "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			else
+				echo "Original Name: $0"
+				newname="$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				echo "New Name: $newname"
 				mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
-				echo "Clean albums renamed"
+				echo "Clean album renamed"
 			fi
 
 		' {} \;
@@ -330,14 +333,21 @@ DeDupeProcess () {
 				echo "Duplicate clean tracks found, deleting..."
 				rm -rf "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				echo "Renaming Explicit Album"
-				mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
+				echo "Original Name: $0"
+				newname="$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				echo "New Name: $newname"
+				mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			else
-				if [ -d "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g")" ]; then
+				if [ -d "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 					echo "Duplicate found, deleting..."
+					echo "Deleted: $0"
 					rm -rf "$0"
 				else
 					echo "Renaming Explicit Album"
-					mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
+					echo "Original Name: $0"
+					newname="$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+					echo "New Name: $newname"
+					mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				fi
 			fi
 		' {} \;
@@ -353,6 +363,15 @@ DeDupeProcess () {
 	else
 		logit "No folders found"
 	fi
+	if find "${LidArtistPath}" -type d -iname "*(Explicit)*(WEB)-DREMIX" | read; then
+		logit "Renaming album folders with \"(Explicit)\" in folder name to clean name"
+		find "${LidArtistPath}" -type d -iname "*(Explicit)*(WEB)-DREMIX" -exec bash -c '
+			mv "$0" "$(echo $0 | sed "s/(Explicit) //g")"
+		' {} \;
+		logit "Renaming complete"
+	fi
+
+	
 	logit "DeDupe processing complete"
 }
 
@@ -532,6 +551,12 @@ ArtistModeBegin(){
 				LidarrImport
 			fi
 			
+			if [ "${DeDupe}" = True ]; then
+				DeDupeProcess
+			else
+				logit "Skipping DeDupe of files"
+			fi
+			
 			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
 				logit "Cant get DeezerArtistURL or artistid.. skipping"
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
@@ -622,15 +647,15 @@ ArtistModeBegin(){
 							else
 								logit "Skipping Any Processing"
 							fi
+							if [ "${DeDupe}" = True ]; then
+								DeDupeProcess
+							else
+								logit "Skipping DeDupe of files"
+							fi
 						rm "${DownloadDir}/temp-hold"
 						fi
 				fi
 			done
-			if [ "${DeDupe}" = True ]; then
-				DeDupeProcess
-			else
-				logit "Skipping DeDupe of files"
-			fi
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
