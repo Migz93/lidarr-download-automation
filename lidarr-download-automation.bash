@@ -305,15 +305,15 @@ LidarrImport () {
 
 DeDupeProcess () {
 	logit "Beginning DeDupe proceess"
-	if find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([0-9]*) (WEB)-DREMIX$" | read; then
+	if find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Clean albums found for renaming"
-		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([0-9]*) (WEB)-DREMIX$" -exec bash -c '
+		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" -exec bash -c '
 
-			if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
+			if [ -d "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 				echo "Duplicate, deleting..."
-				rm -rf "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				rm -rf "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			else
-				mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				echo "Clean albums renamed"
 			fi
 
@@ -322,28 +322,34 @@ DeDupeProcess () {
 	else
 		logit "no files to process"
 	fi
-	logit "Finding explicit files"
-	if find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([0-9]*) (WEB)-DREMIX$" | read; then
-		logit "Explicit files found, renaming and removing matched clean versions..."
-		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([0-9]*) (WEB)-DREMIX$" -exec bash -c '
-			if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
+	logit "Finding explicit albums"
+	if find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" | read; then
+		logit "Explicit albums found, renaming and removing matched clean versions..."
+		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" -exec bash -c '
+			if [ -d "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 				echo "Duplicate clean tracks found, deleting..."
-				rm -rf "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				rm -rf "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				echo "Renaming Explicit Album"
-				mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
+				mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
 			else
-				if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")" ]; then
+				if [ -d "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g")" ]; then
 					echo "Duplicate found, deleting..."
 					rm -rf "$0"
 				else
 					echo "Renaming Explicit Album"
-					mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
+					mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g")"
 				fi
 			fi
 		' {} \;
 		logit "Renaming and cleanup of clean versions complete"
 	else
 		logit "no files to process"
+	fi
+	logit "Finding folders that do not meet required naming pattern"
+	if find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([0-9]+) ([a-zA-Z]+) (WEB)-DREMIX$" | read; then
+		logit "Folders found, cleaning up folders"
+		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([0-9]+) ([a-zA-Z]+) (WEB)-DREMIX$" -exec rm -rf {} \;
+		logit "Cleanup complete"
 	fi
 	logit "DeDupe processing complete"
 }
