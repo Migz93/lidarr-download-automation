@@ -314,14 +314,14 @@ DeDupeProcess () {
 		logit "Clean albums found for renaming"
 		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" -exec bash -c '
 
-			if [ -d "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
+			if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 				echo "Duplicate, deleting..."
-				rm -rf "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				rm -rf "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			else
 				echo "Original Name: $0"
-				newname="$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				newname="$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				echo "New Name: $newname"
-				mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				echo "Clean album renamed"
 			fi
 
@@ -334,25 +334,25 @@ DeDupeProcess () {
 	if find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Explicit albums found, renaming and removing matched clean versions..."
 		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" -exec bash -c '
-			if [ -d "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
+			if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 				echo "Duplicate clean tracks found, deleting..."
-				rm -rf "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				rm -rf "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				echo "Renaming Explicit Album"
 				echo "Original Name: $0"
-				newname="$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				newname="$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				echo "New Name: $newname"
-				mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			else
-				if [ -d "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
+				if [ -d "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 					echo "Duplicate found, deleting..."
 					echo "Deleted: $0"
 					rm -rf "$0"
 				else
 					echo "Renaming Explicit Album"
 					echo "Original Name: $0"
-					newname="$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+					newname="$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 					echo "New Name: $newname"
-					mv "$0" "$(echo $0 | sed "s/([0-9]+) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+					mv "$0" "$(echo $0 | sed "s/([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 				fi
 			fi
 		' {} \;
