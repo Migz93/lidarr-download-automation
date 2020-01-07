@@ -366,17 +366,7 @@ DeDupeProcess () {
 		logit "Cleanup complete"
 	else
 		logit "No folders found"
-	fi
-	
-	if find "${LidArtistPath}" -type d -iname "*(Explicit)*(WEB)-DREMIX" | read; then
-		logit "Renaming album folders with \"(Explicit)\" in folder name to clean name"
-		find "${LidArtistPath}" -type d -iname "*(Explicit)*(WEB)-DREMIX" -exec bash -c '
-			mv "$0" "$(echo $0 | sed "s/(Explicit) //g")"
-		' {} \;
-		logit "Renaming complete"
-	fi
-
-	
+	fi	
 	logit "DeDupe processing complete"
 }
 
