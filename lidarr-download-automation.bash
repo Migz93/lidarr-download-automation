@@ -344,16 +344,10 @@ DeDupeProcess () {
 				echo "New Name: $explicitnewname"
 				mv "$0" "explicitnewname"
 			else
-				if [ -d "$explicitnewname" ]; then
-					echo "Duplicate found, deleting..."
-					echo "Deleted: $0"
-					rm -rf "$0"
-				else
-					echo "Renaming Explicit Album"
-					echo "Original Name: $0"
-					echo "New Name: $explicitnewname"
-					mv "$0" "$explicitnewname"
-				fi
+				echo "Renaming Explicit Album"
+				echo "Original Name: $0"
+				echo "New Name: $explicitnewname"
+				mv "$0" "$explicitnewname"
 			fi
 		' {} \;
 		logit "Renaming and cleanup of clean versions complete"
