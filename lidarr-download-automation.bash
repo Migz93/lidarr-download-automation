@@ -337,12 +337,12 @@ DeDupeProcess () {
 		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -exec bash -c '
 			explicitnewname="$(echo $0 | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			if [ -d "$explicitnewname" ]; then
-				echo "Duplicate clean tracks found, deleting..."
+				echo "Duplicate found, deleting..."
 				rm -rf "$explicitnewname"
 				echo "Renaming Explicit Album"
 				echo "Original Name: $0"
 				echo "New Name: $explicitnewname"
-				mv "$0" "explicitnewname"
+				mv "$0" "$explicitnewname"
 			else
 				echo "Renaming Explicit Album"
 				echo "Original Name: $0"
