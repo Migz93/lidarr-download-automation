@@ -613,6 +613,9 @@ ArtistModeBegin(){
 					
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
+						logit "Processing ${i} of ${loopindex}"
+						logit "ArtistName: ${LidArtistNameCap}"
+						logit "ArtistID: ${DeezerArtistID}"
 						logit "Downloading Album: ${album}"
 						DownloadURL "https://www.deezer.com/album/${album}" 
 				
