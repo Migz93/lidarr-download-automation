@@ -576,13 +576,19 @@ ArtistModeBegin(){
 			if [ "${LyricType}" = explicit ]; then
 				logit "Downloading all explicit albums..."
 				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | sort -u))
+				totalnumberalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | sort -u | wc -l))
 			elif [ "${LyricType}" = clean ]; then
 				logit "Downloading all clean albums..."
 				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | sort -u))
+				totalnumberalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==false)| .id" | sort -u | wc -l))
 			else 
 				logit "Downloading all albums..."
 				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| .id" | sort -u))
+				totalnumberalbumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| .id" | sort -u | wc -l))
 			fi
+			
+			logit "Total # Albums to Process: $totalnumberalbumlist"
+		
 			for album in "${albumlist[@]}"; do
 				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
 					then 
