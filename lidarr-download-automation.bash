@@ -588,11 +588,12 @@ ArtistModeBegin(){
 			fi
 			
 			logit "Total # Albums to Process: $totalnumberalbumlist"
-		
-			for album in "${albumlist[@]}"; do
-				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${album}" | read
+					
+			for album in ${!albumlist[@]}; do
+				albumnumber=$(( $album + 1 ))
+				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${albumlist[$album]}" | read
 					then 
-						logit "Previously Downloaded: ${album}, skipping..."
+						logit "Previously Downloaded ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]}), skipping..."
 					else
 						if [ "${DownloadArtistArtwork}" = True ]; then 
 							if [ ! -d "${LidArtistPath}" ];	then
@@ -619,11 +620,11 @@ ArtistModeBegin(){
 					
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
-						logit "Processing ${i} of ${loopindex}"
+						logit "Processing Artist: ${i} of ${loopindex}"
 						logit "ArtistName: ${LidArtistNameCap}"
 						logit "ArtistID: ${DeezerArtistID}"
-						logit "Downloading Album: ${album}"
-						DownloadURL "https://www.deezer.com/album/${album}" 
+						logit "Downloading Album: ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]}")
+						DownloadURL "https://www.deezer.com/album/${albumlist[$album]}" 
 				
 						if [ "$(ls -A "${DownloadDir}")" ]; then
 							Cleanup
