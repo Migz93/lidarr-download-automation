@@ -37,7 +37,7 @@ PreviouslyDownloaded="True" # Checks Download log before downloading artist/albu
 ######################## DOWNLOADER RECOMMENDED FILE NAMING CONVENTIONS ############################
 # Track Name Template: %disc%%number% - %title% %explicit%
 # Album Track Name Template: %disc%%number% - %title% %explicit%
-# Alubm Name Template: %artist% (%artist_id%) - %album% %explicit%(%year%) (%type%) (%album_id%) (WEB)-DREMIX
+# Alubm Name Template: %artist% (%artist_id%) - %album% %explicit%(%type%) (%album_id%) (WEB)-DREMIX
 
 ############################## DOWNLOAD POSTPROCESSING CONFIGURATION ###############################
 Threads="1" # Sets the maximum number of threads for multi-threaded operations, setting to "0" will use all available threads!
