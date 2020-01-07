@@ -310,14 +310,6 @@ LidarrImport () {
 
 DeDupeProcess () {
 	logit "Beginning DeDupe proceess"
-	logit "Finding folders that do not meet required naming pattern"
-	if find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
-		logit "Folders found, cleaning up folders"
-		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -exec rm -rf {} \;
-		logit "Cleanup complete"
-	else
-		logit "No folders found"
-	fi
 	if find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Clean albums found for renaming"
 		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -exec bash -c '
@@ -368,6 +360,20 @@ DeDupeProcess () {
 	else
 		logit "no files to process"
 	fi
+	
+	logit "Finding folders that do not meet required naming pattern"
+	if find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$" | read; then
+		logit "Folders found, cleaning up folders"
+		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$" -exec rm -rf {} \;
+		logit "Cleanup complete"
+	elif find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" | read; then
+		logit "Folders found, cleaning up folders"
+		find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" -exec rm -rf {} \;
+		logit "Cleanup complete"
+	else
+		logit "No folders found"
+	fi
+	
 	if find "${LidArtistPath}" -type d -iname "*(Explicit)*(WEB)-DREMIX" | read; then
 		logit "Renaming album folders with \"(Explicit)\" in folder name to clean name"
 		find "${LidArtistPath}" -type d -iname "*(Explicit)*(WEB)-DREMIX" -exec bash -c '
