@@ -311,9 +311,9 @@ LidarrImport () {
 DeDupeProcess () {
 	logit "Beginning DeDupe proceess"
 	logit "Finding folders that do not meet required naming pattern"
-	if find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$" | read; then
+	if find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Folders found, cleaning up folders"
-		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$" -exec rm -rf {} \;
+		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) ([0-9]+) (WEB)-DREMIX$" -exec rm -rf {} \;
 		logit "Cleanup complete"
 	else
 		logit "No folders found"
