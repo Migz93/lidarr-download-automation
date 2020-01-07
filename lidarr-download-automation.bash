@@ -316,7 +316,8 @@ DeDupeProcess () {
 
 			if [ -d "$(echo $0 | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")" ]; then
 				echo "Duplicate, deleting..."
-				rm -rf "$(echo $0 | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+				rm -rf "$0"
+				echo "Deleted: $0"
 			else
 				echo "Original Name: $0"
 				newname="$(echo $0 | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
