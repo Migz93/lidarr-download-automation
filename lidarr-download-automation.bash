@@ -277,9 +277,9 @@ LidarrImport () {
 	if find "${DownloadDir}" -type d -iname "*(${DeezerArtistID}) - *" | read; then
 		searchstring="*(${DeezerArtistID}) - *"
 	elif find "${DownloadDir}" -type d -iname "*${artistname}* - *" -newer "${DownloadDir}/temp-hold" | read; then
-		searchstring="*${artistname}* - *"
+		searchstring="${artistname} (*) - *"
 	else
-		searchstring="*${artistname}* - *"
+		searchstring="${artistname} (*) - *"
 	fi
 	if find "${DownloadDir}" -type d -iname "${searchstring}"  | read; then
 		if [ ! -d "${LidArtistPath}" ];	then
