@@ -498,14 +498,13 @@ ArtistModeBegin(){
 	let loopindex=TotalLidArtistNames-1
 	[ ${loopindex} = "-1" ] && ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 	logit ""
-	logit "${TotalLidAlbumsNames} Lidarr Records Found"
+	logit "${TotalLidArtistNames} Lidarr Records Found"
 	for ((i=0;i<=(loopindex);i++)); do
 		logit ""
 		DeezerArtistID=""
 		DeezerArtistURL=""
 		currentartist=$(( $i + 1 ))
-		totalartist==$(( $loopindex + 1 ))
-		logit "Processing ${currentartist} of ${totalartist}"
+		logit "Processing $currentartist of $TotalLidArtistNames"
 		if [ -n "${wantit}" ]; then
 			ProcessArtistsLidarrReq
 			logit "ArtistName: ${LidArtistNameCap} (ID: ${DeezerArtistID})"
@@ -549,7 +548,7 @@ ArtistModeBegin(){
 											
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
-						logit "Processing ${currentartist} of ${totalartist}"
+						logit "Processing $currentartist of $TotalLidArtistNames"
 						logit "ArtistName: ${LidArtistNameCap} (ID: ${DeezerArtistID})"
 						logit "Downloading Album: ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]})"
 						DownloadURL "https://www.deezer.com/album/${albumlist[$album]}" 
