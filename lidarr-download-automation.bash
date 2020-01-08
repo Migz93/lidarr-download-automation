@@ -281,7 +281,7 @@ LidarrImport () {
 	else
 		searchstring="${artistname} (*) - *"
 	fi
-	if find "${DownloadDir}" -type d -iname "${searchstring}"  | read; then
+	if find "${DownloadDir}" -type d -iname "${searchstring}" | read; then
 		if [ ! -d "${LidArtistPath}" ];	then
 			logit "Destination Does not exist, creating ${LidArtistPath}"
 			mkdir "${LidArtistPath}"
@@ -303,8 +303,9 @@ LidarrImport () {
 				rm -rf "$folder"
 			fi
 		done
-	else
-		logit "No ${LidArtistNameCap} files to import"
+	elif find "${DownloadDir}" -type d -iname "${searchstring}" -newer "${DownloadDir}/temp-hold" | read; then
+		logit "Searching for downloaded files"
+		logit "ERROR: Non-mathching files found, but not imported"
 	fi
 }
 
@@ -542,12 +543,6 @@ ArtistModeBegin(){
 			
 			if [ "${AppProcess}" = AllDownloads ]; then
 				LidarrImport
-			fi
-			
-			if [ "${DeDupe}" = True ]; then
-				DeDupeProcess
-			else
-				logit "Skipping DeDupe of files"
 			fi
 			
 			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
