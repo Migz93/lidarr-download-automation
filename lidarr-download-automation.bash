@@ -581,6 +581,7 @@ ArtistModeBegin(){
 						fi
 				fi
 			done
+			logit "Processing Complete"
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
