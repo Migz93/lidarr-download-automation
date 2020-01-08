@@ -201,6 +201,7 @@ Replaygain () {
 }
 
 DeleteDownloadLog () {
+	logit ""
 	if [ "${ClearDownloadLog}" = True ]; then
 		if [ -a "${LogDir}"/${DownloadLogName} ]; then
 			rm "${LogDir}"/${DownloadLogName}
@@ -211,6 +212,7 @@ DeleteDownloadLog () {
 	if [ ! -a "${LogDir}"/${DownloadLogName} ]; then
 		touch "${LogDir}"/${DownloadLogName} && logit "${DownloadLogName} created..."
 	fi
+	logit ""
 }
 
 CleanStart(){
@@ -410,7 +412,8 @@ WantedModeBegin(){
 	GetTotalAlbumsLidarrReq
 	let loopindex=TotalLidAlbumsNames-1
 	[ ${loopindex} = "-1" ] && ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
-	logit "Going to process and download ${TotalLidAlbumsNames} records"
+	logit ""
+	logit "${TotalLidAlbumsNames} Lidarr Records Found"
 	for ((i=0;i<=(loopindex);i++)); do
 			logit ""
 			LidArtistName=""
@@ -494,7 +497,8 @@ ArtistModeBegin(){
 	GetTotalArtistsLidarrReq
 	let loopindex=TotalLidArtistNames-1
 	[ ${loopindex} = "-1" ] && ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
-	logit "Going to process and download ${TotalLidArtistNames} records"
+	logit ""
+	logit "${TotalLidAlbumsNames} Lidarr Records Found"
 	for ((i=0;i<=(loopindex);i++)); do
 		logit ""
 		DeezerArtistID=""
@@ -608,6 +612,7 @@ fi
 }
 
 EnabledOptions () {
+	logit ""
 	logit "Global Configured Options:"
 	logit "Quality = ${Quality}"
 	if [ "${CleanStart}" = True ]; then
@@ -659,6 +664,7 @@ EnabledOptions () {
 	else
 		logit "AppProcess = Skip"
 	fi
+	logit ""
 }
 
 main(){
