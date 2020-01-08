@@ -467,18 +467,12 @@ WantedModeBegin(){
 						Cleanup
 						if [ "${Verification}" = True ]; then
 							Verify
-						else
-							logit "Skipping File Verification"
 						fi
 						if [ "${Convert}" = True ]; then
 							Convert
-						else
-							logit "Skipping FLAC Conversion"
 						fi
 						if [ "${ReplaygainTagging}" = True ]; then
 							Replaygain
-						else
-							logit "Skipping Replaygain Tagging"
 						fi
 						if [ "${AppProcess}" = External ]; then
 							ExternalProcess
@@ -516,9 +510,7 @@ ArtistModeBegin(){
 		logit "Processing ${i} of ${loopindex}"
 		if [ -n "${wantit}" ]; then
 			ProcessArtistsLidarrReq
-			logit "Querying ${i} of ${loopindex}"
-			logit "ArtistName: ${LidArtistNameCap}"
-			logit "ArtistID: ${DeezerArtistID}"
+			logit "ArtistName: ${LidArtistNameCap} (ID: ${DeezerArtistID})"
 		else
 			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
@@ -568,18 +560,12 @@ ArtistModeBegin(){
 							Cleanup
 							if [ "${Verification}" = True ]; then
 								Verify
-							else
-								logit "Skipping File Verification"
 							fi
 							if [ "${Convert}" = True ]; then
 								Convert
-							else
-								logit "Skipping FLAC Conversion"
 							fi
 							if [ "${ReplaygainTagging}" = True ]; then
 								Replaygain
-							else
-								logit "Skipping Replaygain Tagging"
 							fi
 							if [ "${AppProcess}" = External ]; then
 								ExternalProcess
@@ -627,6 +613,40 @@ else
 fi
 }
 
+EnabledOptions () {
+	logit "Global Configured Options:"
+	logit "Quality = ${Quality}"
+	if [ "${Verification}" = True ]; then
+		logit "Verification = Enabled"
+	else
+		logit "Verification = Disabled"
+	fi
+	if [ "${Convert}" = True ]; then
+		logit "Convert = Enabled"
+	else
+		logit "Convert = Disabled"
+	fi
+	if [ "${ReplaygainTagging}" = True ]; then
+		logit "ReplaygainTagging = Enabled"
+	else
+		logit "ReplaygainTagging = Disabled"
+	fi
+	if [ "${DownloadArtistArtwork}" = True ]; then 
+		logit "DownloadArtistArtwork = Enabled"
+	else
+		logit "DownloadArtistArtwork = Disabled"
+	fi
+	if [ "${AppProcess}" = External ]; then
+		logit "AppProcess = External"
+	elif [ "${AppProcess}" = Lidarr ]; then
+		logit "AppProcess = Lidarr"
+	elif [ "${AppProcess}" = AllDownloads ]; then
+		logit "AppProcess = AllDownloads"
+	else
+		logit "AppProcess = Skip"
+	fi
+}
+
 main(){
 	OLDIFS=$IFS
 	IFS=$'\n'
@@ -637,6 +657,7 @@ main(){
 	CleanStart
 	CheckdlPath
 	DeleteDownloadLog
+	EnabledOptions
 	rm "${DownloadDir}/temp-hold" 2>/dev/null
 	case "${Mode}" in
 		wanted)	WantedModeBegin;;
