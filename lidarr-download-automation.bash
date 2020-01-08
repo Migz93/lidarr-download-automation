@@ -451,11 +451,7 @@ WantedModeBegin(){
 		fi
 				
 		if [ -n "${DeezerAlbumURL}" ]; then
-	
-			if [ "${DownloadArtistArtwork}" = True ]; then 
-				DLArtistArtwork
-			fi
-		
+						
 			if [ "${AppProcess}" = AllDownloads ]; then
 				LidarrImport
 			fi
@@ -492,6 +488,9 @@ WantedModeBegin(){
 							LidarrImport
 						else
 							logit "Skipping Any Processing"
+						fi
+						if [ "${DownloadArtistArtwork}" = True ]; then 
+							DLArtistArtwork
 						fi
 					fi
 					rm "${DownloadDir}/temp-hold"
@@ -557,10 +556,7 @@ ArtistModeBegin(){
 					then 
 						logit "Previously Downloaded ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]}), skipping..."
 					else
-						if [ "${DownloadArtistArtwork}" = True ]; then 
-							
-						fi
-					
+											
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
 						logit "Processing Artist: ${i} of ${loopindex}"
@@ -594,13 +590,13 @@ ArtistModeBegin(){
 							else
 								logit "Skipping Any Processing"
 							fi
+							if [ "${DownloadArtistArtwork}" = True ]; then 
+								DLArtistArtwork
+							fi
 						rm "${DownloadDir}/temp-hold"
 						fi
 				fi
 			done
-			if [ "${DownloadArtistArtwork}" = True ]; then 
-				DLArtistArtwork
-			fi
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
