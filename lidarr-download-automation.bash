@@ -623,7 +623,7 @@ ArtistModeBegin(){
 						logit "Processing Artist: ${i} of ${loopindex}"
 						logit "ArtistName: ${LidArtistNameCap}"
 						logit "ArtistID: ${DeezerArtistID}"
-						logit "Downloading Album: ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]}")
+						logit "Downloading Album: ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]})"
 						DownloadURL "https://www.deezer.com/album/${albumlist[$album]}" 
 				
 						if [ "$(ls -A "${DownloadDir}")" ]; then
