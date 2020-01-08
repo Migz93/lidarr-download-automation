@@ -312,44 +312,44 @@ DeDupeProcess () {
 	logit "Beginning DeDupe proceess"
 	if find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Clean albums found for renaming"
-		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -exec bash -c '
-
-			cleannewname="$(echo $0 | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
+			cleannewname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			if [ -d "$cleannewname" ]; then
 				echo "Duplicate, deleting..."
-				rm -rf "$0"
-				echo "Deleted: $0"
+				rm -rf "$folder"
+				logit "Deleted: $folder"
 			else
-				echo "Original Name: $0"
-				echo "New Name: $cleannewname"
-				mv "$0" "$cleannewname"
-				echo "Clean album renamed"
+				logit "Original Name: $folder"
+				logit "New Name: $cleannewname"
+				mv "$folder" "$cleannewname"
+				logit "Clean album renamed"
 			fi
 
-		' {} \;
+		done
 		logit "Clean albums renamed and deduped..." 
 	else
 		logit "no files to process"
 	fi
-	logit "Finding explicit albums"
+
 	if find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
+		logit "Finding explicit albums"
 		logit "Explicit albums found, renaming and removing matched clean versions..."
-		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -exec bash -c '
-			explicitnewname="$(echo $0 | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
+			explicitnewname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			if [ -d "$explicitnewname" ]; then
-				echo "Duplicate found, deleting..."
+				logit "Duplicate found, deleting..."
 				rm -rf "$explicitnewname"
-				echo "Renaming Explicit Album"
-				echo "Original Name: $0"
-				echo "New Name: $explicitnewname"
-				mv "$0" "$explicitnewname"
+				logit "Renaming Explicit Album"
+				logit "Original Name: $folder"
+				logit "New Name: $explicitnewname"
+				mv "$folder" "$explicitnewname"
 			else
-				echo "Renaming Explicit Album"
-				echo "Original Name: $0"
-				echo "New Name: $explicitnewname"
-				mv "$0" "$explicitnewname"
+				logit "Renaming Explicit Album"
+				logit "Original Name: $folder"
+				logit "New Name: $explicitnewname"
+				mv "$folder" "$explicitnewname"
 			fi
-		' {} \;
+		done
 		logit "Renaming and cleanup of clean versions complete"
 	else
 		logit "no files to process"
@@ -358,12 +358,15 @@ DeDupeProcess () {
 	logit "Finding folders that do not meet required naming pattern"
 	if find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Folders found, cleaning up folders"
-		find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" -exec rm -rf {} \;
+		find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
+			rm -rf "$folder"
+		done
 		logit "Cleanup complete"
 	elif find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$" | read; then
 		logit "Folders found, cleaning up folders"
-		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$" -exec rm -rf {} \;
-		logit "Cleanup complete"
+		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$"  -print0 | while IFS= read -r -d '' folder; do
+			rm -rf "$folder"
+		done
 	else
 		logit "No folders found"
 	fi	
