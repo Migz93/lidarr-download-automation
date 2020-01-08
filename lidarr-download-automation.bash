@@ -203,13 +203,13 @@ Replaygain () {
 DeleteDownloadLog () {
 	logit ""
 	if [ "${ClearDownloadLog}" = True ]; then
-		if [ -a "${LogDir}"/${DownloadLogName} ]; then
+		if [ -f "${LogDir}"/${DownloadLogName} ]; then
 			rm "${LogDir}"/${DownloadLogName}
 		else
 			logit "No Download log to clear"
 		fi
 	fi
-	if [ ! -a "${LogDir}"/${DownloadLogName} ]; then
+	if [ ! -f "${LogDir}"/${DownloadLogName} ]; then
 		touch "${LogDir}"/${DownloadLogName} && logit "${DownloadLogName} created..."
 	fi
 	logit ""
