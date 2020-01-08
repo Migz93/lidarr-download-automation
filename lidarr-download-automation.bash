@@ -310,6 +310,7 @@ LidarrImport () {
 
 DeDupeProcess () {
 	logit "Beginning DeDupe proceess"
+	
 	if find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Clean albums found for renaming"
 		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
@@ -327,8 +328,6 @@ DeDupeProcess () {
 
 		done
 		logit "Clean albums renamed and deduped..." 
-	else
-		logit "no files to process"
 	fi
 
 	if find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
@@ -337,7 +336,7 @@ DeDupeProcess () {
 		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
 			explicitnewname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
 			if [ -d "$explicitnewname" ]; then
-				logit "Duplicate found, deleting..."
+				logit "Clean version found, deleting..."
 				rm -rf "$explicitnewname"
 				logit "Renaming Explicit Album"
 				logit "Original Name: $folder"
@@ -351,12 +350,10 @@ DeDupeProcess () {
 			fi
 		done
 		logit "Renaming and cleanup of clean versions complete"
-	else
-		logit "no files to process"
 	fi
 	
-	logit "Finding folders that do not meet required naming pattern"
 	if find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" | read; then
+		logit "Finding folders that do not meet required naming pattern"
 		logit "Folders found, cleaning up folders"
 		find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
 			rm -rf "$folder"
@@ -367,8 +364,6 @@ DeDupeProcess () {
 		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$"  -print0 | while IFS= read -r -d '' folder; do
 			rm -rf "$folder"
 		done
-	else
-		logit "No folders found"
 	fi	
 	logit "DeDupe processing complete"
 }
