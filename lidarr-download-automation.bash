@@ -518,7 +518,13 @@ ArtistModeBegin(){
 				logit "ERROR: Cant get DeezerArtistURL or artistid.."
 				logit "INFO: Update MusicBrainz Artist record with Deezer Artist url to fix error in future runs"
 				logit "INFO: URL to MB page for update: https://musicbrainz.org/artist/${MBArtistID}/relationships"
-				logt "skipping..."
+				logit "See: ${LogDir}/error.log for more detail..."
+				if cat "${LogDir}/${DownloadLogName}" | grep "${MBArtistID}" | read; then
+					logit "See: ${LogDir}/error.log for more detail..."
+				else
+					logit "${LidArtistNameCap} - Update Musicbrainz Relationship Page (https://musicbrainz.org/artist/${MBArtistID}/relationships) with Deezer Artist Link" >> "${LogDir}"/error.log
+					logit "skipping..."
+				fi
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
