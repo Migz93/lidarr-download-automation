@@ -499,7 +499,9 @@ ArtistModeBegin(){
 		logit ""
 		DeezerArtistID=""
 		DeezerArtistURL=""
-		logit "Processing ${i} of ${loopindex}"
+		currentartist=$(( $i + 1 ))
+		totalartist==$(( $loopindex + 1 ))
+		logit "Processing ${currentartist} of ${totalartist}"
 		if [ -n "${wantit}" ]; then
 			ProcessArtistsLidarrReq
 			logit "ArtistName: ${LidArtistNameCap} (ID: ${DeezerArtistID})"
@@ -543,7 +545,7 @@ ArtistModeBegin(){
 											
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
 						touch "${DownloadDir}/temp-hold"
-						logit "Processing Artist: ${i} of ${loopindex}"
+						logit "Processing ${currentartist} of ${totalartist}"
 						logit "ArtistName: ${LidArtistNameCap} (ID: ${DeezerArtistID})"
 						logit "Downloading Album: ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]})"
 						DownloadURL "https://www.deezer.com/album/${albumlist[$album]}" 
