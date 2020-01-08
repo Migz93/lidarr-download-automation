@@ -295,9 +295,13 @@ LidarrImport () {
 				rm -rf "$folder"
 			fi
 		done
-	elif find "${DownloadDir}" -type d -iname "${searchstring}" -newer "${DownloadDir}/temp-hold" | read; then
+	elif find "${DownloadDir}" -type d -iname "*-DREMIX" -newer "${DownloadDir}/temp-hold" | read; then
 		logit "Searching for downloaded files"
 		logit "ERROR: Non-mathching files found, but not imported"
+		logit "INFO: See: ${LogDir}/error.log for more detail..."
+		find "${DownloadDir}" -type d -iname "*-DREMIX" -newer "${DownloadDir}/temp-hold" -print0 | while IFS= read -r -d '' folder; do
+			logit "ERROR: Cannot Import, Artist does not match \"${searchstring}\", file: $folder" >> "${LogDir}"/error.log
+		done
 	fi
 }
 
