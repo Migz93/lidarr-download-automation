@@ -176,7 +176,7 @@ Verify () {
 	if ! [ -x "$(command -v flac)" ]; then
 		logit "ERROR: FLAC verification utility not installed (ubuntu: apt-get install -y flac)"
 	else
-		if find "${DownloadDir}/" -name "*.flac"  | read;	then
+		if find "${DownloadDir}/" -name "*.flac"  | read; then
 			find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "if flac -t --totally-silent \"@\"; then echo \"FLAC CHECK PASSED: @\"; else rm \"@\" && echo \"FAILED FLAC CHECK, FILE DELETED: @\"; fi;" && logit "FLAC FILES VERIFIED"
 		fi
 	fi
@@ -191,13 +191,13 @@ Verify () {
 }
 
 Replaygain () {
-	logit "START REPLAYGAIN TAGGING"
 	if ! [ -x "$(command -v flac)" ]; then
 		logit "ERROR: METAFLAC replaygain utility not installed (ubuntu: apt-get install -y flac)"
-	else
+	elif find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" | read; then
+		logit "START REPLAYGAIN TAGGING"
 		find "${DownloadDir}/" -name "*.flac" -newer "${DownloadDir}/temp-hold" -printf '%h\n' | sort -u | sed -e "s/'/\\'/g" -e 's/\$/\\$/g' | xargs -d '\n' -n1 -I@ -P ${Threads} bash -c "find \"@\" -name \"*.flac\" -exec metaflac --add-replay-gain \"{}\" + && echo \"TAGGED: @\""
+		logit "REPLGAINGAIN TAGGING COMPLETE"
 	fi
-	logit "REPLGAINGAIN TAGGING COMPLETE"
 }
 
 DeleteDownloadLog () {
