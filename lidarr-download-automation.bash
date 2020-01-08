@@ -207,8 +207,6 @@ DeleteDownloadLog () {
 		else
 			logit "No Download log to clear"
 		fi
-	else
-		logit "ClearDownloadLog is disabled"
 	fi
 	if [ ! -a "${LogDir}"/${DownloadLogName} ]; then
 		touch "${LogDir}"/${DownloadLogName} && logit "${DownloadLogName} created..."
@@ -219,8 +217,6 @@ CleanStart(){
 	if [ "${CleanStart}" = True ]; then
 		logit "Removing previously downloaded files from downloads directory".
 		rm -rf "${DownloadDir}"/*
-	else
-		logit "Skipping CleanStart"
 	fi
 }
 
@@ -233,16 +229,12 @@ Cleanup(){
 			logit "Removing unwanted FLAC's"
 			find "${DownloadDir}"/. -type f -iname "*.flac" -type f -delete
 		fi
-	else
-		logit "Skipping KeepOnly Quality Cleanup"
 	fi
 	if [ "${CannotImport}" = True ]; then
 		logit "Removing files that cannot be imported to Lidarr and empty folders"
 		find "${DownloadDir}"/. -type f -iname "*.lrc" -type f -delete
 		find "${DownloadDir}"/. -type f -iname "*.jpg" -type f -delete
 		find "${DownloadDir}"/ -empty -type d -delete
-	else
-		logit "Skipping Unwanted file removal"
 	fi
 }
 
@@ -616,6 +608,26 @@ fi
 EnabledOptions () {
 	logit "Global Configured Options:"
 	logit "Quality = ${Quality}"
+	if [ "${CleanStart}" = True ]; then
+		logit "CleanStart = Enabled"
+	else
+		logit "CleanStart = Disabled"
+	fi
+	if [ "${ClearDownloadLog}" = True ]; then
+		logit "ClearDownloadLog = Enabled"
+	else
+		logit "ClearDownloadLog = Disabled"
+	fi
+	if [ "${KeepOnly}" = True ]; then
+		logit "KeepOnly = Enabled"
+	else
+		logit "KeepOnly = Disabled"
+	fi
+	if [ "${CannotImport}" = True ]; then
+		logit "CannotImport = Enabled"
+	else
+		logit "CannotImport = Disabled"
+	fi
 	if [ "${Verification}" = True ]; then
 		logit "Verification = Enabled"
 	else
@@ -654,10 +666,10 @@ main(){
 	source ./config || ErrorExit "Configuration file not found" 2
 	CheckLogPath
 	InitLogs
-	CleanStart
-	CheckdlPath
-	DeleteDownloadLog
 	EnabledOptions
+	CheckdlPath
+	CleanStart
+	DeleteDownloadLog
 	rm "${DownloadDir}/temp-hold" 2>/dev/null
 	case "${Mode}" in
 		wanted)	WantedModeBegin;;
