@@ -449,38 +449,41 @@ WantedModeBegin(){
 				LidarrImport
 			fi
 			
-			if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${DeezerAlbumURL}" | read
-				then 
-					logit "Previously Downloaded: ${DeezerAlbumURL}, skipping..."
-				else
-					rm "${DownloadDir}/temp-hold" 2>/dev/null
-					touch "${DownloadDir}/temp-hold"
-					DownloadURL "${DeezerAlbumURL}"
-					if [ "$(ls -A "${DownloadDir}")" ]; then
-						Cleanup
-						if [ "${Verification}" = True ]; then
-							Verify
-						fi
-						if [ "${Convert}" = True ]; then
-							Convert
-						fi
-						if [ "${ReplaygainTagging}" = True ]; then
-							Replaygain
-						fi
-						if [ "${AppProcess}" = External ]; then
-							ExternalProcess
-						elif [ "${AppProcess}" = Lidarr ]; then
-							LidarrProcess
-						elif [ "${AppProcess}" = AllDownloads ]; then
-							LidarrImport
-						else
-							logit "Skipping Any Processing"
-						fi
-						if [ "${DownloadArtistArtwork}" = True ]; then 
-							DLArtistArtwork
-						fi
-					fi
+			if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${DeezerAlbumURL}" | read; then 
+				logit "Previously Downloaded: ${DeezerAlbumURL}, skipping..."
+			else
+				if [ -f "${DownloadDir}/temp-hold"  ]; then					
 					rm "${DownloadDir}/temp-hold"
+				fi
+				touch "${DownloadDir}/temp-hold"
+				DownloadURL "${DeezerAlbumURL}"
+				if [ "$(ls -A "${DownloadDir}")" ]; then
+					Cleanup
+					if [ "${Verification}" = True ]; then
+						Verify
+					fi
+					if [ "${Convert}" = True ]; then
+						Convert
+					fi
+					if [ "${ReplaygainTagging}" = True ]; then
+						Replaygain
+					fi
+					if [ "${AppProcess}" = External ]; then
+						ExternalProcess
+					elif [ "${AppProcess}" = Lidarr ]; then
+						LidarrProcess
+					elif [ "${AppProcess}" = AllDownloads ]; then
+						LidarrImport
+					else
+						logit "Skipping Any Processing"
+					fi
+					if [ "${DownloadArtistArtwork}" = True ]; then 
+						DLArtistArtwork
+					fi
+				fi
+				if [ -f "${DownloadDir}/temp-hold"  ]; then					
+					rm "${DownloadDir}/temp-hold"
+				fi
 			fi
 		else
 			logit "Cant match the wanted album to an album on deezer .. skipping"
@@ -505,15 +508,11 @@ ArtistModeBegin(){
 		logit "Processing $currentartist of $TotalLidArtistNames"
 		if [ -n "${wantit}" ]; then
 			ProcessArtistsLidarrReq
-			logit "ArtistName: ${LidArtistNameCap} (ID: ${DeezerArtistID})"
+			logit "ArtistName: ${LidArtistNameCap}"
 		else
 			ErrorExit "Lidarr communication error, check LidarrUrl in config or LidarrApiKey"
 		fi
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${DeezerArtistURL}" ]; then
-			
-			if [ "${AppProcess}" = AllDownloads ]; then
-				LidarrImport
-			fi
 			
 			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
 				logit "ERROR: Cant get DeezerArtistURL or artistid.."
@@ -522,6 +521,10 @@ ArtistModeBegin(){
 				logt "skipping..."
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
+			fi
+			
+			if [ "${AppProcess}" = AllDownloads ]; then
+				LidarrImport
 			fi
 			
 			if [ "${LyricType}" = explicit ]; then
@@ -542,43 +545,45 @@ ArtistModeBegin(){
 					
 			for album in ${!albumlist[@]}; do
 				albumnumber=$(( $album + 1 ))
-				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${albumlist[$album]}" | read
-					then 
-						logit "Previously Downloaded ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]}), skipping..."
-					else
-											
-						rm "${DownloadDir}/temp-hold" 2>/dev/null
-						touch "${DownloadDir}/temp-hold"
-						logit "Processing $currentartist of $TotalLidArtistNames"
-						logit "ArtistName: ${LidArtistNameCap} (ID: ${DeezerArtistID})"
-						logit "Downloading Album: ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]})"
-						DownloadURL "https://www.deezer.com/album/${albumlist[$album]}" 
-				
-						if [ "$(ls -A "${DownloadDir}")" ]; then
-							Cleanup
-							if [ "${Verification}" = True ]; then
-								Verify
-							fi
-							if [ "${Convert}" = True ]; then
-								Convert
-							fi
-							if [ "${ReplaygainTagging}" = True ]; then
-								Replaygain
-							fi
-							if [ "${AppProcess}" = External ]; then
-								ExternalProcess
-							elif [ "${AppProcess}" = Lidarr ]; then
-								LidarrProcess
-							elif [ "${AppProcess}" = AllDownloads ]; then
-								LidarrImport
-							else
-								logit "Skipping Any Processing"
-							fi
-							if [ "${DownloadArtistArtwork}" = True ]; then 
-								DLArtistArtwork
-							fi
+				if [ "${PreviouslyDownloaded}" = True ] && cat "${LogDir}/${DownloadLogName}" | grep "${albumlist[$album]}" | read; then 
+					logit "Previously Downloaded ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]}), skipping..."
+				else
+					if [ -f "${DownloadDir}/temp-hold"  ]; then					
 						rm "${DownloadDir}/temp-hold"
+					fi
+					touch "${DownloadDir}/temp-hold"
+					logit "Processing $currentartist of $TotalLidArtistNames"
+					logit "ArtistName: ${LidArtistNameCap} (ID: ${DeezerArtistID})"
+					logit "Downloading Album: ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]})"
+					DownloadURL "https://www.deezer.com/album/${albumlist[$album]}" 
+				
+					if [ "$(ls -A "${DownloadDir}")" ]; then
+						Cleanup
+						if [ "${Verification}" = True ]; then
+							Verify
 						fi
+						if [ "${Convert}" = True ]; then
+							Convert
+						fi
+						if [ "${ReplaygainTagging}" = True ]; then
+							Replaygain
+						fi
+						if [ "${AppProcess}" = External ]; then
+							ExternalProcess
+						elif [ "${AppProcess}" = Lidarr ]; then
+							LidarrProcess
+						elif [ "${AppProcess}" = AllDownloads ]; then
+							LidarrImport
+						else
+							logit "Skipping Any Processing"
+						fi
+						if [ "${DownloadArtistArtwork}" = True ]; then 
+							DLArtistArtwork
+						fi
+					fi
+					if [ -f "${DownloadDir}/temp-hold"  ]; then					
+						rm "${DownloadDir}/temp-hold"
+					fi
 				fi
 			done
 			logit "Processing Complete"
@@ -679,7 +684,6 @@ main(){
 	CheckdlPath
 	CleanStart
 	DeleteDownloadLog
-	rm "${DownloadDir}/temp-hold" 2>/dev/null
 	case "${Mode}" in
 		wanted)	WantedModeBegin;;
 		artist) ArtistModeBegin;;
