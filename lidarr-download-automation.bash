@@ -369,6 +369,24 @@ DeDupeProcess () {
 	logit "DeDupe processing complete"
 }
 
+DLArtistArtwork () {
+	if [ -d "${LidArtistPath}" ];	then
+		if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
+			logit "Downloading artist artwork..."
+			artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
+			logit "Downloading: ${artistartwork}"
+			curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
+			chmod ${FolderPermissions} "${LidArtistPath}"
+			if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
+				logit "ERROR: Only artwork is smaller than \"${MinArtistArtworkSize}\", removing to allow lidarr to update it"
+				rm "${LidArtistPath}/folder.jpg"
+			else 
+				echo "SUCCESS: Artwork downloaded successfully"
+			fi
+		fi
+	fi
+}
+
 ErrorExit(){
 	case ${2} in
 		2)	echo ${1};exit ${2};;
@@ -431,45 +449,11 @@ WantedModeBegin(){
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 			continue
 		fi
-		
-		if [ "${DownloadArtistArtwork}" = True ]; then
-			if [ -f "${LidArtistPath}/folder.jpg"  ]; then
-				logit "Checking for low quality artist artwork"
-				if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
-					logit "Low quality (folder.jpg < ${MinArtistArtworkSize}) artwork found, deleting..."
-					rm "${LidArtistPath}/folder.jpg"
-					logit "Sending notification to Lidarr to re-scan artist and update local artwork metadata"
-					LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
-					logit "Notified Lidarr to scan ${LidArtistNameCap}"	
-				else
-					logit "SUCCESS: Artwork meets size requirements: folder.jpg > ${MinArtistArtworkSize}"
-				fi
-			fi
-		fi
-		
+				
 		if [ -n "${DeezerAlbumURL}" ]; then
 	
 			if [ "${DownloadArtistArtwork}" = True ]; then 
-				if [ ! -d "${LidArtistPath}" ];	then
-					logit "Destination Does not exist, creating ${LidArtistPath}"
-					mkdir "${LidArtistPath}"
-					chmod ${FolderPermissions} "${LidArtistPath}"
-				fi
-				logit "Downloading artist artwork..."
-				if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
-					artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
-					logit "Downloading: ${artistartwork}"
-					curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
-					chmod ${FolderPermissions} "${LidArtistPath}"
-					if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
-						logit "ERROR: Only artwork is smaller than \"${MinArtistArtworkSize}\", removing to allow lidarr to update it"
-						rm "${LidArtistPath}/folder.jpg"
-					else 
-						echo "SUCCESS: Artwork downloaded successfully"
-					fi								
-				else
-					logit "Artwork exists, skipping..."
-				fi
+				DLArtistArtwork
 			fi
 		
 			if [ "${AppProcess}" = AllDownloads ]; then
@@ -551,21 +535,6 @@ ArtistModeBegin(){
 				continue
 			fi
 			
-			if [ "${DownloadArtistArtwork}" = True ]; then
-				if [ -f "${LidArtistPath}/folder.jpg"  ]; then
-					logit "Checking for low quality artist artwork"
-					if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
-						logit "Low quality (folder.jpg < ${MinArtistArtworkSize}) artwork found, deleting..."
-						rm "${LidArtistPath}/folder.jpg"
-						logit "Sending notification to Lidarr to re-scan artist and update local artwork metadata"
-						LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
-						logit "Notified Lidarr to scan ${LidArtistNameCap}"	
-					else
-						logit "SUCCESS: Artwork meets size requirements: folder.jpg > ${MinArtistArtworkSize}"
-					fi
-				fi
-			fi
-			
 			if [ "${LyricType}" = explicit ]; then
 				logit "Downloading all explicit albums..."
 				albumlist=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}/albums&limit=1000" | jq -r ".data | .[]| select(.explicit_lyrics==true)| .id" | sort -u))
@@ -589,26 +558,7 @@ ArtistModeBegin(){
 						logit "Previously Downloaded ${albumnumber} of ${totalnumberalbumlist} (ID: ${albumlist[$album]}), skipping..."
 					else
 						if [ "${DownloadArtistArtwork}" = True ]; then 
-							if [ ! -d "${LidArtistPath}" ];	then
-								logit "Destination Does not exist, creating ${LidArtistPath}"
-								mkdir "${LidArtistPath}"
-								chmod ${FolderPermissions} "${LidArtistPath}"
-							fi
-							logit "Downloading artist artwork..."
-							if [ ! -f "${LidArtistPath}/folder.jpg"  ]; then
-								artistartwork=($(curl -s --GET "https://api.deezer.com/artist/${DeezerArtistID}" | jq -r '.picture_xl'))
-								logit "Downloading: ${artistartwork}"
-								curl -o "${LidArtistPath}/folder.jpg" ${artistartwork} && logit "Download success!"
-								chmod ${FolderPermissions} "${LidArtistPath}"
-								if find "${LidArtistPath}/folder.jpg" -type f -size -${MinArtistArtworkSize} | read; then
-									logit "ERROR: Only artwork is smaller than \"${MinArtistArtworkSize}\", removing to allow lidarr to update it"
-									rm "${LidArtistPath}/folder.jpg"
-								else 
-									echo "SUCCESS: Artwork downloaded successfully"
-								fi								
-							else
-								logit "Artwork exists, skipping..."
-							fi
+							
 						fi
 					
 						rm "${DownloadDir}/temp-hold" 2>/dev/null
@@ -648,6 +598,9 @@ ArtistModeBegin(){
 						fi
 				fi
 			done
+			if [ "${DownloadArtistArtwork}" = True ]; then 
+				DLArtistArtwork
+			fi
 		else
 			logit "Cant get artistname or or DeezerArtistURL or artistid.. skipping"
 			skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
