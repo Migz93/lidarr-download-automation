@@ -18,6 +18,7 @@ ProcessArtistsLidarrReq(){
 	LidArtistID=$(echo "${wantit}" | jq -r .[$i].id)
 	LidArtistName=$(echo "${wantit}" | jq -r .[$i].sortName)
 	LidArtistNameCap=$(echo "${wantit}" | jq -r .[$i].artistName)
+	MBArtistID=$(echo "${wantit}" | jq -r .[$i].foreignArtistId)
 	LidArtistPath=$(echo "${wantit}" | jq -r .[$i].path)
 	LidAlbumName=$(echo "${wantit}" | jq -r ".[$i].lastAlbum.title")	
 	#M1 -- retrieve deezer artist id -- from lidarr
@@ -515,7 +516,10 @@ ArtistModeBegin(){
 			fi
 			
 			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
-				logit "Cant get DeezerArtistURL or artistid.. skipping"
+				logit "ERROR: Cant get DeezerArtistURL or artistid.."
+				logit "INFO: Update MusicBrainz Artist record with Deezer Artist url to fix error in future runs"
+				logit "INFO: URL to MB page for update: https://musicbrainz.org/artist/${MBArtistID}/relationships"
+				logt "skipping..."
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
