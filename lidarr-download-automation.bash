@@ -267,8 +267,9 @@ LidarrImport () {
 		fi
 		find "${DownloadDir}" -type d -iname "${searchstring}" -print0 | while IFS= read -r -d '' folder; do
 			shortfoldername="$(basename "$folder")"
+			shortartistpath="$(basename "${LidArtistPath}")"
 			if mv "$folder" "${LidArtistPath}/"; then
-				logit "Moved \"$shortfoldername\" to \"${LidArtistPath}\" for import"
+				logit "Moved: $shortfoldername, to: $shortartistpath for import"
 				Permissions "${LidArtistPath}"
 				if [ "${DeDupe}" = True ]; then
 					DeDupeProcess
@@ -278,7 +279,7 @@ LidarrImport () {
 				LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
 				logit "Notified Lidarr to scan ${LidArtistNameCap}"
 			else
-				logit "ERROR: \"$shortfoldername\" - Already exists in destination, deleting..."
+				logit "ERROR: \"$shortfoldername\" - Already exists in $shortartistpath, deleting..."
 				rm -rf "$folder"
 			fi
 		done
@@ -288,7 +289,7 @@ LidarrImport () {
 		logit "INFO: See: ${LogDir}/error.log for more detail..."
 		find "${DownloadDir}" -type d -iname "*-DREMIX" -newer "${DownloadDir}/temp-hold" -print0 | while IFS= read -r -d '' folder; do
 			shortfoldername="$(basename "$folder")"
-			logit "ERROR: Cannot Import, Artist does not match \"${searchstring}\", file: $shortfoldername" >> "${LogDir}"/error.log
+			logit "ERROR: Cannot Import Folder: $shortfoldername, Artist does not match \"*(${DeezerArtistID}) - *\" or \"${searchstring}\"" >> "${LogDir}"/error.log
 		done
 	fi
 }
@@ -313,9 +314,7 @@ DeDupeProcess () {
 				mv "$folder" "$cleanname"
 				logit "Clean album renamed"
 			fi
-
 		done
-		logit "Clean albums renamed and deduped..." 
 	fi
 
 	if find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
@@ -624,7 +623,9 @@ fi
 EnabledOptions () {
 	logit ""
 	logit "Global Configured Options:"
-	logit "Quality = ${Quality}"
+	logit "Download Directory = ${DownloadDir}"
+	logit "Log Directory = ${LogDir}"
+	logit "Download Quality = ${Quality}"
 	if [ "${CleanStart}" = True ]; then
 		logit "CleanStart = Enabled"
 	else
