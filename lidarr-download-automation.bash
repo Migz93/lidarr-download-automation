@@ -504,7 +504,7 @@ ArtistModeBegin(){
 		fi
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${DeezerArtistURL}" ]; then
 			
-			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
+			if [ -z "${DeezerArtistURL}" ]; then
 				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				logit "ERROR: Cant get DeezerArtistURL or artistid.."
 				logit "INFO: Update MusicBrainz Artist record with Deezer Artist url to fix error in future runs"
