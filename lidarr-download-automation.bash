@@ -31,12 +31,6 @@ ProcessArtistsLidarrReq(){
 			DeezerArtistID=$(curl -s --GET --data-urlencode q="${LidArtistName}" "https://api.deezer.com/search" | jq -r ".data | .[]|.artist|.id" |uniq -c|sort -nr |head -n1 | awk '{print $2}')
 			DeezerArtistURL="https://www.deezer.com/artist/"${DeezerArtistID}
 		fi
-	else
-		if [ "${DeezerArtistURL}" = "" ] || [ "${DeezerArtistID}" = "" ]; then
-			##M3 fallback -- retrieve deezer artist id using last album-- from deezer
-			DeezerArtistID=$(curl -s --GET --data-urlencode q="${LidArtistName} ${LidAlbumName}" "https://api.deezer.com/search" | jq -r ".data | .[]|.artist|.id" |uniq -c|sort -nr |head -n1 | awk '{print $2}')
-			DeezerArtistURL="https://www.deezer.com/artist/"${DeezerArtistID}
-		fi
 	fi
 ##returns the wanted artists id -- from lidarr or deezer
 }
