@@ -266,8 +266,9 @@ LidarrImport () {
 			chmod ${FolderPermissions} "${LidArtistPath}"
 		fi
 		find "${DownloadDir}" -type d -iname "${searchstring}" -print0 | while IFS= read -r -d '' folder; do
+			shortfoldername="$(basename "$folder")"
 			if mv "$folder" "${LidArtistPath}/"; then
-				logit "Moved \"$folder\" to \"${LidArtistPath}\" for import"
+				logit "Moved \"$shortfoldername\" to \"${LidArtistPath}\" for import"
 				Permissions "${LidArtistPath}"
 				if [ "${DeDupe}" = True ]; then
 					DeDupeProcess
@@ -277,7 +278,7 @@ LidarrImport () {
 				LidarrProcessIt=$(curl -s $LidarrUrl/api/v1/command -X POST -d "{\"name\": \"RefreshArtist\", \"artistID\": \"${LidArtistID}\"}" --header "X-Api-Key:${LidarrApiKey}" );
 				logit "Notified Lidarr to scan ${LidArtistNameCap}"
 			else
-				logit "ERROR: \"$folder\" - Already exists in destination, deleting..."
+				logit "ERROR: \"$shortfoldername\" - Already exists in destination, deleting..."
 				rm -rf "$folder"
 			fi
 		done
@@ -286,7 +287,8 @@ LidarrImport () {
 		logit "ERROR: Non-mathching files found, but not imported"
 		logit "INFO: See: ${LogDir}/error.log for more detail..."
 		find "${DownloadDir}" -type d -iname "*-DREMIX" -newer "${DownloadDir}/temp-hold" -print0 | while IFS= read -r -d '' folder; do
-			logit "ERROR: Cannot Import, Artist does not match \"${searchstring}\", file: $folder" >> "${LogDir}"/error.log
+			shortfoldername="$(basename "$folder")"
+			logit "ERROR: Cannot Import, Artist does not match \"${searchstring}\", file: $shortfoldername" >> "${LogDir}"/error.log
 		done
 	fi
 }
@@ -297,15 +299,18 @@ DeDupeProcess () {
 	if find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Clean albums found for renaming"
 		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
-			cleannewname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
-			if [ -d "$cleannewname" ]; then
-				echo "Duplicate, deleting..."
+			cleanname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+			shortfoldername="$(basename "$folder")"
+			shortcleanname="$(basename "$cleanname")"
+			if [ -d "$cleanname" ]; then
+				echo "Album already imported, deleting..."
 				rm -rf "$folder"
-				logit "Deleted: $folder"
+				logit "Deleted: $shortfoldername"
 			else
-				logit "Original Name: $folder"
-				logit "New Name: $cleannewname"
-				mv "$folder" "$cleannewname"
+				logit "Importing & Renaming Clean Album"
+				logit "Original Name: $shortfoldername"
+				logit "New Name: $shortcleanname"
+				mv "$folder" "$cleanname"
 				logit "Clean album renamed"
 			fi
 
@@ -315,24 +320,27 @@ DeDupeProcess () {
 
 	if find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Finding explicit albums"
-		logit "Explicit albums found, renaming and removing matched clean versions..."
+		logit "Explicit albums found, importing album folders"
 		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
-			explicitnewname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
-			if [ -d "$explicitnewname" ]; then
-				logit "Clean version found, deleting..."
-				rm -rf "$explicitnewname"
-				logit "Renaming Explicit Album"
-				logit "Original Name: $folder"
-				logit "New Name: $explicitnewname"
-				mv "$folder" "$explicitnewname"
+			explicitname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+			shortfoldername="$(basename "$folder")"
+			shortexplicitname="$(basename "$explicitname")"
+			if [ -d "$explicitname" ]; then
+				logit "Exisiting clean version found, deleting clean version..."
+				rm -rf "$explicitname"
+				logit "Importing & Renaming Explicit Album"
+				logit "Original Name: $shortfoldername"
+				logit "New Name: $shortexplicitname"
+				mv "$folder" "$explicitname"
+				logit "Explicit album renamed"
 			else
-				logit "Renaming Explicit Album"
-				logit "Original Name: $folder"
-				logit "New Name: $explicitnewname"
-				mv "$folder" "$explicitnewname"
+				logit "Importing & Renaming Explicit Album"
+				logit "Original Name: $shortfoldername"
+				logit "New Name: $shortexplicitname"
+				mv "$folder" "$explicitname"
+				logit "Explicit album renamed"
 			fi
 		done
-		logit "Renaming and cleanup of clean versions complete"
 	fi
 	
 	if find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" | read; then
