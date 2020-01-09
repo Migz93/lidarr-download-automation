@@ -508,6 +508,7 @@ ArtistModeBegin(){
 		if [ -n "${DeezerArtistID}" ] || [ -n "${LidArtistName}" ] || [ -n "${DeezerArtistURL}" ]; then
 			
 			if [ ${DeezerArtistURL} = "https://www.deezer.com/artist/" ];then
+				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				logit "ERROR: Cant get DeezerArtistURL or artistid.."
 				logit "INFO: Update MusicBrainz Artist record with Deezer Artist url to fix error in future runs"
 				logit "INFO: URL to MB page for update: https://musicbrainz.org/artist/${MBArtistID}/relationships"
@@ -515,10 +516,9 @@ ArtistModeBegin(){
 				if cat "${LogDir}/error.log" | grep "${MBArtistID}" | read; then
 					logit "skipping..."
 				else
-					logit "${LidArtistNameCap} - Update Musicbrainz Relationship Page (https://musicbrainz.org/artist/${MBArtistID}/relationships) with Deezer Artist Link" >> "${LogDir}"/error.log
+					logit "ERROR: ${LidArtistNameCap} - Update Musicbrainz Relationship Page (https://musicbrainz.org/artist/${MBArtistID}/relationships) with Deezer Artist Link" >> "${LogDir}"/error.log
 					logit "skipping..."
 				fi
-				skiplog "${LidArtistName};${DeezerArtistID};${DeezerArtistURL};${LidAlbumName}"
 				continue
 			fi
 			
