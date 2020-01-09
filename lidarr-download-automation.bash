@@ -51,11 +51,6 @@ ProcessAlbumsLidarrReq(){
 	#M1 -- retrieve deezer artist id -- from lidarr
 	DeezerArtistURL=$(echo "${wantit}" | jq -r .records[${i}].artist.links[] |jq -r 'select(.name=="deezer")|.url');
 	DeezerArtistID=$(printf -- "%s" "${DeezerArtistURL##*/}")
-	if [ "${DeezerArtistURL}" = "" ] || [ "${DeezerArtistID}" = "" ]; then
-		##M2 fallback -- retrieve deezer artist id -- from deezer
-		#Encode searchQuery in a url encodable format.
-		DeezerArtistID=$(curl -s --GET --data-urlencode q="${LidArtistName}" "https://api.deezer.com/search" | jq -r ".data | .[]|.artist|.id" |uniq -c|sort -nr |head -n1 | awk '{print $2}')
-	fi
 ##returns the wanted artists id -- from lidarr or deezer
 }
 
