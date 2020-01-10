@@ -517,7 +517,7 @@ ArtistModeBegin(){
 				logit "INFO: Update MusicBrainz Artist record with Deezer Artist url to fix error in future runs"
 				logit "INFO: URL to MB page for update: https://musicbrainz.org/artist/${MBArtistID}/relationships"
 				logit "INFO: See ${LogDir}/MBError.log for more detail..."
-				if cat "${LogDir}/error.log" | grep "${MBArtistID}" | read; then
+				if cat "${LogDir}/MBError.log" | grep "${MBArtistID}" | read; then
 					logit "skipping..."
 				else
 					logit "Update Musicbrainz Relationship Page (https://musicbrainz.org/artist/${MBArtistID}/relationships) for \"${LidArtistNameCap}\" with Deezer Artist Link" >> "${LogDir}"/MBError.log
