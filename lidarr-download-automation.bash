@@ -269,7 +269,7 @@ LidarrImport () {
 			shortfoldername="$(basename "$folder")"
 			shortartistpath="$(basename "${LidArtistPath}")"
 			if mv "$folder" "${LidArtistPath}/"; then
-				logit "Moved: $shortfoldername, to: $shortartistpath for import"
+				logit "Imported \"$shortfoldername\" to Lidarr \"shortartistpath\""
 				Permissions "${LidArtistPath}"
 				if [ "${DeDupe}" = True ]; then
 					DeDupeProcess
