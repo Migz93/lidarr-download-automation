@@ -286,10 +286,10 @@ LidarrImport () {
 	elif find "${DownloadDir}" -type d -iname "*-DREMIX" -newer "${DownloadDir}/temp-hold" | read; then
 		logit "Searching for downloaded files"
 		logit "ERROR: Non-mathching files found, but not imported"
-		logit "INFO: See: ${LogDir}/error.log for more detail..."
+		logit "INFO: See: ${LogDir}/ImportError.log for more detail..."
 		find "${DownloadDir}" -type d -iname "*-DREMIX" -newer "${DownloadDir}/temp-hold" -print0 | while IFS= read -r -d '' folder; do
 			shortfoldername="$(basename "$folder")"
-			logit "ERROR: Cannot Import Folder: $shortfoldername, Artist does not match \"*(${DeezerArtistID}) - *\" or \"${searchstring}\"" >> "${LogDir}"/error.log
+			logit "Cannot Import: \"$shortfoldername\", Artist does not match \"*(${DeezerArtistID}) - *\" or \"${searchstring}\"" >> "${LogDir}"/ImportError.log
 		done
 	fi
 }
@@ -516,11 +516,11 @@ ArtistModeBegin(){
 				logit "ERROR: Cant get DeezerArtistURL or artistid.."
 				logit "INFO: Update MusicBrainz Artist record with Deezer Artist url to fix error in future runs"
 				logit "INFO: URL to MB page for update: https://musicbrainz.org/artist/${MBArtistID}/relationships"
-				logit "INFO: See ${LogDir}/error.log for more detail..."
+				logit "INFO: See ${LogDir}/MBError.log for more detail..."
 				if cat "${LogDir}/error.log" | grep "${MBArtistID}" | read; then
 					logit "skipping..."
 				else
-					logit "ERROR: ${LidArtistNameCap} - Update Musicbrainz Relationship Page (https://musicbrainz.org/artist/${MBArtistID}/relationships) with Deezer Artist Link" >> "${LogDir}"/error.log
+					logit "Update Musicbrainz Relationship Page (https://musicbrainz.org/artist/${MBArtistID}/relationships) for \"${LidArtistNameCap}\" with Deezer Artist Link" >> "${LogDir}"/MBError.log
 					logit "skipping..."
 				fi
 				continue
