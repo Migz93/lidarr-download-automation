@@ -265,8 +265,8 @@ LidarrImport () {
 			mkdir "${LidArtistPath}"
 			chmod ${FolderPermissions} "${LidArtistPath}"
 		fi
-		if find "$downloaddir" -mindepth 1 -type d -not -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
-			find "$downloaddir" -mindepth 1 -type d -not -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
+		if find "${DownloadDir}" -mindepth 1 -type d -not -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
+			find "${DownloadDir}" -mindepth 1 -type d -not -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
 				rm -rf "$folder"
 			done
 		fi
