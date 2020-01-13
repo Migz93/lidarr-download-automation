@@ -265,6 +265,11 @@ LidarrImport () {
 			mkdir "${LidArtistPath}"
 			chmod ${FolderPermissions} "${LidArtistPath}"
 		fi
+		if find "$downloaddir" -mindepth 1 -type d -not -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
+			find "$downloaddir" -mindepth 1 -type d -not -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
+				rm -rf "$folder"
+			done
+		fi
 		find "${DownloadDir}" -type d -iname "${searchstring}" -print0 | while IFS= read -r -d '' folder; do
 			shortfoldername="$(basename "$folder")"
 			shortartistpath="$(basename "${LidArtistPath}")"
@@ -300,7 +305,7 @@ DeDupeProcess () {
 	if find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" | read; then
 		logit "Clean albums found for renaming"
 		find "${LidArtistPath}" -type d -not -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
-			cleanname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+			cleanname="$(echo $folder | sed "s/ ([a-zA-Z]*) ([0-9]*) ([0-9]*) (WEB)-DREMIX$//g" | sed "s/ (Explicit)//g")"
 			shortfoldername="$(basename "$folder")"
 			shortcleanname="$(basename "$cleanname")"
 			if [ -d "$cleanname" ]; then
@@ -321,7 +326,7 @@ DeDupeProcess () {
 		logit "Finding explicit albums"
 		logit "Explicit albums found, importing album folders"
 		find "${LidArtistPath}" -type d -iname "*Explicit*" -regex ".*([a-zA-Z]+) ([0-9]+) ([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
-			explicitname="$(echo $folder | sed "s/([0-9]*) ([0-9]*) (WEB)-DREMIX$/(WEB)-DREMIX/g" | sed "s/(Explicit) //g")"
+			explicitname="$(echo $folder | sed "s/ ([a-zA-Z]*) ([0-9]*) ([0-9]*) (WEB)-DREMIX$//g" | sed "s/ (Explicit)//g")"
 			shortfoldername="$(basename "$folder")"
 			shortexplicitname="$(basename "$explicitname")"
 			if [ -d "$explicitname" ]; then
@@ -341,21 +346,6 @@ DeDupeProcess () {
 			fi
 		done
 	fi
-	
-	if find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" | read; then
-		logit "Finding folders that do not meet required naming pattern"
-		logit "Folders found, cleaning up folders"
-		find "${LidArtistPath}" -type d -regex ".*([0-9]+) (WEB)-DREMIX$" -print0 | while IFS= read -r -d '' folder; do
-			rm -rf "$folder"
-		done
-		logit "Cleanup complete"
-	elif find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$" | read; then
-		logit "Folders found, cleaning up folders"
-		find "${LidArtistPath}" -type d -iname "*(WEB)-DREMIX" -not -regex ".*([a-zA-Z]+) (WEB)-DREMIX$"  -print0 | while IFS= read -r -d '' folder; do
-			rm -rf "$folder"
-		done
-	fi	
-	logit "DeDupe processing complete"
 }
 
 DLArtistArtwork () {
