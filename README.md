@@ -1,3 +1,9 @@
+# Deprecated
+
+This repository is now deprecated, will no longer be updated and is being set to archived. Unfortunately I haven't had the time to improve or even look at this in a long time. <br>
+For a replacement please see the fantastic work by [RandomNinjaAtk](https://github.com/RandomNinjaAtk) with his own script [here.](https://github.com/RandomNinjaAtk/lidarr-automated-downloader) <br>
+The premise is still the same, it communicates with Lidarr and downloads missing/cutoff from deezer.
+
 # lidarr-download-automation
 Bash script to download your artists that have been added to Lidarr using SMLoadr or d-fi. <br>
 
